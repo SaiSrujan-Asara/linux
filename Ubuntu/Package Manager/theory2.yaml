@@ -1,0 +1,158 @@
+APT Basics – apt vs apt-get vs apt-cache and Core Commands
+
+📦 1. What is APT?
+
+APT stands for Advanced Package Tool — it’s the main system for:
+
+1) Installing
+
+2) Updating
+
+3) Removing
+
+4) Managing packages on Debian-based systems (like Ubuntu)
+
+APT is a high-level interface that internally uses lower-level tools like:
+
+1) dpkg (actual package installation)
+
+2) apt-get, apt-cache (older, still useful)
+
+---
+Difference: apt vs apt-get vs apt-cache
+
+| Command     | Purpose                           | Introduced In | Use When                           |
+| ----------- | --------------------------------- | ------------- | ---------------------------------- |
+| `apt`       | Unified CLI interface             | Ubuntu 16.04+ | ✅ Use for most day-to-day tasks    |
+| `apt-get`   | Low-level, script-friendly tool   | Legacy        | ✅ Use in scripts for compatibility |
+| `apt-cache` | Searches and queries package info | Legacy        | ✅ Use for advanced queries         |
+
+| Feature              | `apt`                         | `apt-get`                 | `apt-cache`                |
+| -------------------- | ----------------------------- | ------------------------- | -------------------------- |
+| Install package      | ✅ `apt install nginx`         | ✅ `apt-get install nginx` | ❌                          |
+| Update package list  | ✅ `apt update`                | ✅ `apt-get update`        | ❌                          |
+| Upgrade all packages | ✅ `apt upgrade`               | ✅ `apt-get upgrade`       | ❌                          |
+| Search for packages  | ✅ `apt search nginx`          | ❌                         | ✅ `apt-cache search nginx` |
+| Show package info    | ✅ `apt show nginx`            | ❌                         | ✅ `apt-cache show nginx`   |
+| Used in scripts      | ⚠️ Avoid (interactive output) | ✅ Preferred               | ✅ Preferred                |
+
+
+-----
+
+🔹 sudo apt update
+
+Purpose: Updates the local list of available packages and their versions.
+
+sudo apt update
+
+🧠 Why?
+
+It checks the URLs in /etc/apt/sources.list for updated metadata.
+
+Best Practice: Always run this before installing or upgrading packages.
+
+---
+
+🔹 sudo apt upgrade
+
+Purpose: Installs newer versions of installed packages (does NOT remove/replace dependencies).
+
+sudo apt upgrade
+
+🧠 Note: It doesn't remove obsolete packages or upgrade to new versions that need removal of others.
+
+---
+
+🔹 sudo apt full-upgrade
+
+Purpose: Upgrades packages and removes conflicting or obsolete ones.
+
+sudo apt full-upgrade
+
+🧠 Use for: Distribution upgrades, or major system updates.
+
+---
+
+🔹 sudo apt install <package>
+
+Purpose: Installs a new package along with its dependencies.
+
+sudo apt install git
+
+Extra Options:
+
+-y: Auto-confirm prompts
+
+--no-install-recommends: Skip optional packages
+
+---
+
+🔹 sudo apt remove <package>
+
+Purpose: Removes a package but keeps its config files.
+
+sudo apt remove nginx
+
+---
+
+🔹 sudo apt purge <package>
+
+Purpose: Removes a package and its config files (clean uninstall).
+
+sudo apt purge nginx
+
+---
+
+🔹 sudo apt autoremove
+
+Purpose: Removes packages that were installed as dependencies but are no longer needed.
+
+sudo apt autoremove
+
+🧠 Best Practice: Use this after remove or purge to clean up.
+
+---
+
+🔹 apt list --installed
+
+Purpose: Lists all currently installed packages.
+
+apt list --installed | grep docker
+
+---
+
+🔹 apt search <term>
+
+Purpose: Searches for a package name or description.
+
+apt search nodejs
+
+---
+
+🔹 apt show <package>
+
+Purpose: Displays detailed info about a package.
+
+apt show curl
+
+Details shown:
+
+Version
+
+Description
+
+Maintainer
+
+Dependencies
+
+License
+
+-----------
+| Task             | Command                                 | Explanation                       |
+| ---------------- | --------------------------------------- | --------------------------------- |
+| Install `htop`   | `sudo apt install htop`                 | Installs system monitor           |
+| Remove MySQL     | `sudo apt purge mysql-server`           | Full removal of MySQL             |
+| Update system    | `sudo apt update && sudo apt upgrade`   | Refresh and upgrade               |
+| Cleanup          | `sudo apt autoremove && sudo apt clean` | Frees disk space                  |
+| Search VSCode    | `apt search vscode`                     | Finds Snap or unofficial versions |
+| View Docker info | `apt show docker.io`                    | Shows Docker version, deps        |
