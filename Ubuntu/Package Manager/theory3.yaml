@@ -1,0 +1,100 @@
+Repositories – Software Sources
+
+📌 What is a Repository?
+
+A repository is a collection of packages stored on remote servers. Ubuntu pulls software from these when using apt.
+
+--
+
+📁 Default Sources File:
+
+Main file:
+
+/etc/apt/sources.list
+
+Additional sources (3rd-party, PPAs):
+
+/etc/apt/sources.list.d/*.list
+
+--
+
+🧱 Types of Ubuntu Repositories (by Support Level)
+
+Ubuntu repositories are grouped into 4 main components based on:
+
+1) Licensing
+
+2) Support by Canonical
+
+3) Source or third-party contributions
+
+| Component    | Description                                    | Officially Supported? | Contains Proprietary? |
+| ------------ | ---------------------------------------------- | --------------------- | --------------------- |
+| `main`       | Official Ubuntu packages                       | ✅ Yes                 | ❌ No                  |
+| `restricted` | Supported but proprietary (e.g., drivers)      | ✅ Yes                 | ✅ Yes                 |
+| `universe`   | Community-maintained open-source packages      | ❌ No                  | ❌ No                  |
+| `multiverse` | Non-free software (legal/ethical restrictions) | ❌ No                  | ✅ Yes                 |
+
+🔍 Example: A Line from sources.list
+
+deb http://archive.ubuntu.com/ubuntu focal main restricted universe multiverse
+
+| Section              | Meaning                                       |
+| -------------------- | --------------------------------------------- |
+| `deb`                | Binary package repository                     |
+| `http://...`         | URL of the repository                         |
+| `focal`              | Ubuntu release codename (e.g., 20.04 = focal) |
+| `main restricted...` | Enabled components (see above)                |
+
+🔄 Updating Repository Cache
+
+To fetch the latest list of available packages:
+
+sudo apt update
+
+This does not upgrade any installed packages — it just updates the metadata cache.
+
+--
+📦 How to Enable/Disable Repositories
+
+1. Edit sources manually:
+
+sudo nano /etc/apt/sources.list
+
+Comment/uncomment lines to enable/disable.
+
+---
+PPA - Personal Package Archives
+
+📌 What is a PPA?
+
+A PPA is a custom or third-party repository hosted on Launchpad.net. Developers use PPAs to distribute newer versions or niche tools.
+
+🔧 Example:
+
+sudo add-apt-repository ppa:graphics-drivers/ppa
+sudo apt update
+sudo apt install nvidia-driver-535
+
+--
+🔙 How to Remove a PPA
+
+sudo add-apt-repository --remove ppa:deadsnakes/ppa
+
+Or delete the .list file manually from:
+
+/etc/apt/sources.list.d/
+
+--
+🔁 Comparison Table
+
+| Feature         | `apt`           | `dpkg`          | `snap`            | `flatpak` (extra) |
+| --------------- | --------------- | --------------- | ----------------- | ----------------- |
+| Layer           | High-level      | Low-level       | Universal manager | Universal manager |
+| Format          | `.deb`          | `.deb`          | `.snap`           | `.flatpak`        |
+| Dependency Mgmt | Yes             | No              | Self-contained    | Self-contained    |
+| Updates         | Manual / script | Manual          | Auto              | Manual            |
+| Isolation       | Low             | Low             | High (sandboxed)  | High (sandboxed)  |
+| Use Case        | Day-to-day      | Custom installs | Apps, isolation   | App sandboxing    |
+
+
