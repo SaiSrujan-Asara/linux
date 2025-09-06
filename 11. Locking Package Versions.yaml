@@ -1,0 +1,79 @@
+🧠 What Does "Locking a Package Version" Mean?
+
+Locking (or holding) a package in Ubuntu means:
+
+❌ Preventing it from being upgraded, even when newer versions are available in the repository.
+
+✅ The package can still be installed and used, but will not be upgraded during:
+
+sudo apt upgrade
+
+---
+
+🔧 Tool: apt-mark
+
+APT provides a command-line utility called apt-mark to manage package states.
+
+✅ Lock a Package (Hold)
+
+sudo apt-mark hold <package-name>
+
+🔸 Example:
+
+sudo apt-mark hold nginx
+
+This prevents nginx from being upgraded unless you remove the hold.
+
+🔁 Unlock a Package (Unhold)
+
+sudo apt-mark unhold <package-name>
+
+🔸 Example:
+
+sudo apt-mark unhold nginx
+
+🔍 Check Which Packages Are Held
+
+apt-mark showhold
+
+🔁 Alternative: dpkg --set-selections (Advanced)
+
+Also possible, but less common today:
+
+✅ Hold a Package
+
+echo "nginx hold" | sudo dpkg --set-selections
+
+🔁 Unhold a Package
+
+echo "nginx install" | sudo dpkg --set-selections
+
+------
+🔬 Difference: Pinning vs Holding
+
+| Feature                     | `apt-mark hold`      | Pinning (`/etc/apt/preferences.d`)   |
+| --------------------------- | -------------------- | ------------------------------------ |
+| Purpose                     | Prevent **upgrades** | Control **source/version** selection |
+| Simpler to use?             | ✅ Yes                | ❌ No (needs config file)             |
+| Can block **only upgrades** | ✅ Yes                | ✅/❌ (depends on pin rules)           |
+| GUI-friendly?               | ✅ Yes                | ❌ No                                 |
+| Good for one-time freezes   | ✅ Yes                | ❌ (used for finer control)           |
+
+| Feature          | Hold/Freeze             | Pinning                                    |
+| ---------------- | ----------------------- | ------------------------------------------ |
+| Prevent upgrades | Yes                     | Can control version and source preferences |
+| Granularity      | Package-level only      | Package and repository level               |
+| Usage complexity | Simple                  | Advanced (requires config files)           |
+| Configuration    | Via commands            | Via `/etc/apt/preferences`                 |
+| Use case         | Freeze package versions | Control package source priorities          |
+
+
+---
+✅ Summary Table
+
+| Task                   | Command                      |                              |
+| ---------------------- | ---------------------------- | ---------------------------- |
+| Hold a package         | `sudo apt-mark hold <pkg>`   |                              |
+| Unhold a package       | `sudo apt-mark unhold <pkg>` |                              |
+| View all held packages | `apt-mark showhold`          |                              |
+| Set hold via `dpkg`    | \`echo "<pkg> hold"          | sudo dpkg --set-selections\` |

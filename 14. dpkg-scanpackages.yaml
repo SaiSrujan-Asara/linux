@@ -1,0 +1,53 @@
+🧠 What is dpkg-scanpackages?
+
+dpkg-scanpackages is a Debian tool that scans a directory containing .deb packages and generates a Packages file, which lists metadata about the packages. This metadata allows APT clients to know which packages are available, their versions, dependencies, and more.
+
+APT uses this Packages file to manage software installation and upgrades.
+
+----
+🔧 Basic Syntax
+
+dpkg-scanpackages [options] <directory> <override-file> > Packages
+
+<directory>: Path to the folder with .deb files
+
+<override-file>: Usually /dev/null if you don't have override files
+
+Output is redirected to a Packages file
+
+---
+🔥 Common Usage Example
+
+dpkg-scanpackages . /dev/null > Packages
+gzip -k -f Packages
+
+Scans the current directory (.)
+
+Creates Packages file
+
+Compresses it to Packages.gz (using gzip)
+
+-k keeps the original Packages file
+
+-f forces overwrite if exists
+
+----
+🧩 Handling Multiple Architectures
+
+To support packages for different CPU architectures (amd64, i386, arm64, etc.), your repo directory should be structured like:
+
+my-apt-repo/
+├── amd64/
+├── i386/
+└── arm64/
+
+Run dpkg-scanpackages separately in each architecture folder, and create corresponding Packages.gz files.
+
+----------
+✅ Summary
+
+| Task                     | Command                                    |
+| ------------------------ | ------------------------------------------ |
+| Generate `Packages` file | `dpkg-scanpackages . /dev/null > Packages` |
+| Compress `Packages` file | `gzip -k -f Packages`                      |
+| List repo files          | `ls -l Packages*`                          |

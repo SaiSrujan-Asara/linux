@@ -1,0 +1,152 @@
+✅ What is dpkg?
+
+dpkg stands for Debian Package and is a low-level package management tool for Debian-based systems like Ubuntu.
+
+Unlike apt, which fetches packages from online repositories, dpkg works directly with .deb files stored locally.
+
+----------
+
+📦 dpkg vs apt — Key Differences
+
+| Feature             | `dpkg`                    | `apt`                                |
+| ------------------- | ------------------------- | ------------------------------------ |
+| Type                | Low-level                 | High-level                           |
+| Works with          | Local `.deb` files        | Online repositories                  |
+| Dependency handling | ❌ No automatic resolution | ✅ Handles dependencies automatically |
+| Use case            | Manual `.deb` installs    | General package management           |
+| Command complexity  | More granular             | Easier, abstracted                   |
+
+----------
+🔧 Basic dpkg Syntax
+
+dpkg [options] filename
+
+🔹 1) Install a Local .deb Package
+sudo dpkg -i <package-file>.deb
+
+
+🔸 Example:
+
+sudo dpkg -i google-chrome-stable_current_amd64.deb
+
+
+⚠️ If dependencies are missing, you'll get errors. To fix:
+
+sudo apt -f install
+
+🔹 2) Remove a Package
+sudo dpkg -r <package-name>
+
+
+🔸 Example:
+
+sudo dpkg -r google-chrome-stable
+
+
+🧠 This removes the software but keeps configuration files.
+
+🔹 3) Purge a Package (remove + configs)
+sudo dpkg -P <package-name>
+
+
+🔸 Example:
+
+sudo dpkg -P google-chrome-stable
+
+🔹 4) List All Installed Packages
+dpkg -l
+
+
+🔸 Filter:
+
+dpkg -l | grep nginx
+
+🔹 5) Check If a Package is Installed
+dpkg -s <package-name>
+
+
+🔸 Example:
+
+dpkg -s curl
+
+🔹 6) Find Which Package Owns a File
+dpkg -S /path/to/file
+
+
+🔸 Example:
+
+dpkg -S /usr/bin/wget
+
+🔹 7) List Files Installed by a Package
+dpkg -L <package-name>
+
+
+🔸 Example:
+
+dpkg -L nano
+
+
+Shows all the paths where nano files are installed.
+
+🔹 8) Get Info from a .deb File (without installing)
+dpkg -I <package-file>.deb
+
+
+🔸 Example:
+
+dpkg -I vscode_1.81.1_amd64.deb
+
+
+Displays control information like version, maintainer, dependencies, etc.
+
+🔹 9) Extract Files from .deb Without Installing
+dpkg -x <package-file>.deb <destination-dir>
+
+
+🔸 Example:
+
+dpkg -x some-package.deb ./extracted
+
+-------
+✅ All Common dpkg Parameters and Their Use
+
+| Command            | Description                               |
+| ------------------ | ----------------------------------------- |
+| `-i`               | Install a `.deb` file                     |
+| `-r`               | Remove package (keep configs)             |
+| `-P`               | Purge package (remove completely)         |
+| `-l`               | List all installed packages               |
+| `-s`               | Show info about installed package         |
+| `-L`               | List files installed by package           |
+| `-S`               | Search for which package owns a file      |
+| `-I`               | Show control info from `.deb` file        |
+| `-x`               | Extract `.deb` file contents              |
+| `--configure`      | Configure unpacked packages               |
+| `--unpack`         | Unpack `.deb` without installing          |
+| `--get-selections` | Show selection state of packages          |
+| `--set-selections` | Set selection state (for cloning systems) |
+
+----------
+✅ Use Cases for dpkg
+
+| Scenario                              | Why Use `dpkg`?              |
+| ------------------------------------- | ---------------------------- |
+| Offline package installation          | No network required          |
+| Installing software from `.deb` files | Like Chrome, VSCode, etc.    |
+| Debugging package issues              | Low-level visibility         |
+| Extracting contents of `.deb` files   | Inspect without installing   |
+| Creating `.deb` packages (build step) | Testing your builds manually |
+
+----------
+✅ Best Practices for Using dpkg
+
+| Practice                                                               | Tip                            |
+| ---------------------------------------------------------------------- | ------------------------------ |
+| ✅ Use `dpkg -i` only for `.deb` files from trusted sources             | Avoid malware                  |
+| 🔍 Use `dpkg -I` before installing unfamiliar packages                 | See what it contains           |
+| 💡 Always follow up with `apt -f install` if you hit dependency errors | Fix broken installs            |
+| 🧪 Test using `dpkg -x` before full install                            | Great for DevOps or pentesting |
+| 📜 Use `dpkg -L` to locate config or binary files                      | Useful in debugging            |
+
+
+

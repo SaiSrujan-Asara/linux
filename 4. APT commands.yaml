@@ -1,0 +1,93 @@
+| Command                                | Description                                        | Example                                |
+| -------------------------------------- | -------------------------------------------------- | -------------------------------------- |
+| `apt full-upgrade`                     | Upgrades packages, can remove conflicting packages | `sudo apt full-upgrade`                |
+| `apt install --reinstall <package>`    | Reinstall a package                                | `sudo apt install --reinstall bash`    |
+| `apt install --only-upgrade <package>` | Upgrade a package if already installed             | `sudo apt install --only-upgrade curl` |
+| `apt-mark hold <package>`              | Prevent package from being upgraded                | `sudo apt-mark hold firefox`           |
+| `apt-mark unhold <package>`            | Allow package upgrades again                       | `sudo apt-mark unhold firefox`         |
+| `apt-cache depends <package>`          | Show package dependencies                          | `apt-cache depends nginx`              |
+| `apt-cache rdepends <package>`         | Show reverse dependencies                          | `apt-cache rdepends libc6`             |
+| `apt policy <package>`                 | Show installed and candidate version info          | `apt policy openssh-server`            |
+| `apt list --upgradable`                | List packages that can be upgraded                 | `apt list --upgradable`                |
+| `apt edit-sources`                     | Edit repository sources list with default editor   | `sudo apt edit-sources`                |
+
+
+----------------------------
+
+2. Explanation & Use Cases
+
+----------------------------
+
+apt full-upgrade
+
+Unlike apt upgrade, it allows removal of conflicting packages.
+
+Useful during major upgrades or kernel updates.
+
+----
+
+apt install --reinstall
+
+Fix broken packages by reinstalling them.
+
+Useful when config files or binaries get corrupted.
+
+----
+
+apt-mark hold / unhold
+
+Hold packages to prevent unwanted upgrades.
+
+Common when you want to freeze a specific version for stability.
+
+----
+
+apt-cache depends & rdepends
+
+Investigate package dependency chains.
+
+Helps in understanding why packages are installed.
+
+----
+
+apt policy
+
+Shows where a package is installed from and its versions.
+
+Helpful for debugging version conflicts.
+
+----
+
+apt edit-sources
+
+Opens /etc/apt/sources.list for editing.
+
+Useful for adding/removing repositories.
+
+-----------------------------------
+⚠️ 4. Best Practices & Tips
+---------------------------------
+
+Use apt-mark hold carefully; held packages won’t receive updates.
+
+Always check dependencies with apt-cache depends before removing packages.
+
+Use apt policy to diagnose why a certain version is installed.
+
+Prefer full-upgrade over upgrade when performing system-wide updates.
+
+Backup sources list before editing (/etc/apt/sources.list).
+
+-----------------------------------
+Interview Questions You Should Know
+-----------------------------------
+
+| Question                                                                  | Expectation                                    |
+| ------------------------------------------------------------------------- | ---------------------------------------------- |
+| How do you prevent a package from upgrading?                              | Use `apt-mark hold`                            |
+| What is the difference between `apt upgrade` and `apt full-upgrade`?      | `full-upgrade` can remove conflicting packages |
+| How to find dependencies of a package?                                    | Use `apt-cache depends`                        |
+| How do you reinstall a package?                                           | `apt install --reinstall`                      |
+| How to check which version of a package is installed and from which repo? | `apt policy`                                   |
+
+

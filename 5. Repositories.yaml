@@ -1,0 +1,155 @@
+Working with Repositories
+
+Repositories are the backbone of package management in Ubuntu. Understanding them fully helps you control where your software comes from, how to add new software sources, and manage updates securely.
+
+1. What is a Repository?
+
+A repository (repo) is a server or location that stores Ubuntu software packages (.deb files) and metadata. When you run apt update or apt install, APT communicates with repos to find and download packages.
+
+-----
+2. Types of Repositories in Ubuntu
+
+| Repo Type         | Description                                   | Example                            |
+| ----------------- | --------------------------------------------- | ---------------------------------- |
+| **Official**      | Maintained by Ubuntu team, trusted packages   | `http://archive.ubuntu.com/ubuntu` |
+| **PPA**           | Personal Package Archives, user-managed repos | `ppa:graphics-drivers/ppa`         |
+| **Third-party**   | External vendors or software providers        | Google Chrome repo                 |
+| **Local/Offline** | Repository stored on a local disk or server   | For air-gapped or offline installs |
+
+
+------
+3. Repository Configuration Files
+
+/etc/apt/sources.list — main repo list file.
+
+/etc/apt/sources.list.d/*.list — additional repo lists.
+
+
+Each line in these files defines a repo source: deb http://archive.ubuntu.com/ubuntu focal main restricted
+
+deb — binary packages repo (for installing)
+
+deb-src — source packages repo (for source code)
+
+http://archive.ubuntu.com/ubuntu — repo URL
+
+focal — Ubuntu codename (20.04)
+
+main restricted — components (sections)
+
+------
+4. Managing Repositories
+
+Adding a Repository
+
+Using add-apt-repository (for PPAs and standard repos):
+
+sudo add-apt-repository ppa:graphics-drivers/ppa
+sudo apt update
+
+
+Adding third-party repo manually by editing /etc/apt/sources.list or creating a .list file in /etc/apt/sources.list.d/
+
+----------
+
+Removing a Repository
+
+Using add-apt-repository -r:
+
+sudo add-apt-repository -r ppa:graphics-drivers/ppa
+sudo apt update
+
+Or manually deleting relevant .list files.
+
+----------
+
+5. Repository Sections/Components
+
+| Section        | Description                                      |
+| -------------- | ------------------------------------------------ |
+| **main**       | Officially supported free/open-source software   |
+| **restricted** | Supported software but not fully open source     |
+| **universe**   | Community-maintained free software               |
+| **multiverse** | Software restricted by copyright or legal issues |
+
+---------
+6. Repository Priorities (Pinning)
+
+APT allows setting priorities for repos/packages to control which versions to prefer.
+
+File: /etc/apt/preferences or files under /etc/apt/preferences.d/
+
+Example:
+
+Package: *
+Pin: release a=focal
+Pin-Priority: 500
+
+Package: *
+Pin: release o=LP-PPA-graphics-drivers
+Pin-Priority: 700
+
+
+----------
+7. Security & Authenticity
+
+Repos are signed with GPG keys to verify package integrity.
+
+Keys are stored in /etc/apt/trusted.gpg or /etc/apt/trusted.gpg.d/.
+
+When adding third-party repos, add their GPG key with:
+
+wget -qO - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+
+
+---------
+8. Useful Commands
+
+| Command                                                     | Description                      | Example                                         |
+| ----------------------------------------------------------- | -------------------------------- | ----------------------------------------------- |
+| `sudo add-apt-repository <PPA>`                             | Adds a PPA repo                  | `sudo add-apt-repository ppa:deadsnakes/ppa`    |
+| `sudo add-apt-repository -r <PPA>`                          | Removes a PPA repo               | `sudo add-apt-repository -r ppa:deadsnakes/ppa` |
+| `apt-cache policy <package>`                                | Shows repo origins for a package | `apt-cache policy nginx`                        |
+| `grep ^deb /etc/apt/sources.list /etc/apt/sources.list.d/*` | List all configured repos        |                                                 |
+| `sudo apt-key list`                                         | List trusted repo keys           |                                                 |
+
+---------
+9. Use Cases & Examples
+
+Add PPA for latest Python:
+
+sudo add-apt-repository ppa:deadsnakes/ppa
+sudo apt update
+sudo apt install python3.10
+
+Add Google Chrome repo manually:
+
+wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
+sudo apt update
+sudo apt install google-chrome-stable
+
+
+------------
+
+10. Common Errors & Fixes
+
+| Error                                     | Cause                      | Fix                                      |
+| ----------------------------------------- | -------------------------- | ---------------------------------------- |
+| `GPG error: NO_PUBKEY`                    | Missing repo key           | Add GPG key manually                     |
+| `Could not resolve host`                  | Network/DNS issue          | Check internet & DNS settings            |
+| `Repository does not have a release file` | Unsupported Ubuntu version | Use correct repo for your Ubuntu version |
+
+
+----------
+12. Interview & Linux+ Prep Questions
+
+What is a PPA and how do you add/remove it?
+
+Where is the APT sources list located?
+
+How do you add a third-party repository with authentication?
+
+Explain the sections: main, universe, restricted, multiverse.
+
+How do you prioritize package versions from different repos?

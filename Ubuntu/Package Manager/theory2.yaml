@@ -39,6 +39,31 @@ Difference: apt vs apt-get vs apt-cache
 
 -----
 
+🧱 How apt Works
+
+When you run a command like:
+
+sudo apt install nginx
+
+Here’s what happens internally:
+
+1) Checks the list of available packages (/var/lib/apt/lists)
+
+2) Finds the requested package and its dependencies
+
+3) Downloads the .deb files
+
+4) Uses dpkg to install them
+
+5) Configures services, runs pre/post scripts
+
+| Path                    | Purpose                                                                    |
+| ----------------------- | -------------------------------------------------------------------------- |
+| `/etc/apt/sources.list` | Configures **where** APT should look for packages (repositories).          |
+| `/var/lib/apt/lists/`   | Stores **what** packages are available from those repositories (metadata). |
+
+
+-----
 🔹 sudo apt update
 
 Purpose: Updates the local list of available packages and their versions.

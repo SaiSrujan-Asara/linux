@@ -1,0 +1,136 @@
+🛡️ What Are Security Updates?
+
+Security updates:
+
+Fix known vulnerabilities (CVEs - Common Vulnerabilities and Exposures)
+
+Are maintained by Ubuntu Security Team
+
+Are often prioritized over general updates
+
+Security updates are published in a dedicated repository:
+
+http://security.ubuntu.com/ubuntu
+
+-----------
+
+📁 Ubuntu Update Categories (Repositories)
+
+Ubuntu divides updates into separate repositories:
+
+| Component    | Description                                 |
+| ------------ | ------------------------------------------- |
+| `main`       | Officially supported software               |
+| `universe`   | Community-maintained software               |
+| `restricted` | Proprietary drivers                         |
+| `multiverse` | Legally restricted software                 |
+| `security`   | Critical security updates (our focus here)  |
+| `updates`    | Recommended bug fixes                       |
+| `backports`  | New features backported from newer releases |
+
+----------
+🔍 Checking for Security Updates Only
+
+sudo apt update
+
+apt list --upgradable 2>/dev/null | grep -i security
+
+This filters only packages with updates coming from the security repository.
+
+Example output:
+
+openssl/focal-security 1.1.1f-1ubuntu2.16 amd64 [upgradable from: 1.1.1f-1ubuntu2.15]
+
+----------
+🔧 Installing Security Updates Only
+
+Use the unattended-upgrades package manually:
+
+sudo apt install unattended-upgrades
+
+sudo unattended-upgrade
+
+You can also use apt with specific target release (advanced):
+
+sudo apt-get -o APT::Default-Release='stable' install <pkg>=<version>
+
+But for most users and admins, unattended-upgrades is the preferred way.
+
+----------
+⚙️ Enabling Automatic Security Updates
+
+Step 1: Install Required Tools
+
+sudo apt install unattended-upgrades apt-listchanges
+
+Step 2: Enable Auto Security Updates
+
+Run:
+
+sudo dpkg-reconfigure --priority=low unattended-upgrades
+
+Select “Yes” to enable.
+
+Step 3: Confirm Config
+
+The config lives here:
+
+/etc/apt/apt.conf.d/50unattended-upgrades
+
+Ensure this line is uncommented:
+
+"${distro_id}:${distro_codename}-security";
+
+You can add others (optional):
+
+"${distro_id}:${distro_codename}-updates";
+"${distro_id}:${distro_codename}-backports";
+
+Step 4: Customize Behavior (Optional)
+
+Edit:
+
+/etc/apt/apt.conf.d/10periodic
+
+Example to run daily:
+
+APT::Periodic::Update-Package-Lists "1";
+APT::Periodic::Unattended-Upgrade "1";
+
+-------------
+🛠️ Tool: ubuntu-security-status
+
+Shows an overview of security support:
+
+ubuntu-security-status
+
+
+Example:
+
+Packages:
+  Installed: 2167
+  Security updates: 14
+  Unsupported: 12
+
+-----------
+🔎 Tool: debian-security-support (Optional)
+
+Install with:
+
+sudo apt install debian-security-support
+
+
+Check unsupported packages:
+
+check-support-status
+
+-----------
+🔄 Summary
+
+| Task                              | Command                                     |                 |
+| --------------------------------- | ------------------------------------------- | --------------- |
+| Show upgradable security packages | \`apt list --upgradable                     | grep security\` |
+| Install only security updates     | `sudo unattended-upgrade`                   |                 |
+| Enable auto security updates      | `sudo dpkg-reconfigure unattended-upgrades` |                 |
+| Security status overview          | `ubuntu-security-status`                    |                 |
+| Check support for packages        | `check-support-status`                      |                 |

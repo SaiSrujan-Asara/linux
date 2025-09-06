@@ -1,0 +1,73 @@
+🧠 What Is Downgrading?
+
+Downgrading means installing an older version of a package, replacing the currently installed (usually newer) version.
+
+---
+🔍 When to Downgrade?
+
+New version causes bugs or instability
+
+Compatibility issues with other software
+
+Certification/testing requires a specific version
+
+Rollback after failed upgrade
+
+---
+🛠️ How to Check Available Versions
+---
+
+apt-cache policy <package-name>
+
+Example:
+
+apt-cache policy nginx
+
+Shows all available versions and their sources.
+
+----
+🔧 Downgrade Steps
+----
+
+Step 1: Identify the version to downgrade to
+
+From apt-cache policy, pick a version, e.g., 1.18.0-0ubuntu1.
+
+Step 2: Install specific version
+
+sudo apt install <package>=<version>
+
+Example:
+
+sudo apt install nginx=1.18.0-0ubuntu1
+
+Step 3: Hold the package (optional but recommended)
+
+Prevent auto-upgrade after downgrade:
+
+sudo apt-mark hold nginx
+
+Step 4: Verify installation
+
+nginx -v
+
+------
+⚠️ Handling Dependencies
+
+Sometimes downgrading may require manual intervention if dependencies conflict.
+
+Use apt error messages to identify conflicts
+
+You might need to downgrade related packages
+
+Use --simulate before actual downgrade to preview changes
+
+--------
+✅ Summary
+
+| Task              | Command                            |
+| ----------------- | ---------------------------------- |
+| Check versions    | `apt-cache policy <pkg>`           |
+| Downgrade package | `sudo apt install <pkg>=<version>` |
+| Hold package      | `sudo apt-mark hold <pkg>`         |
+| Verify version    | `<pkg> -v` or `dpkg -s <pkg>`      |

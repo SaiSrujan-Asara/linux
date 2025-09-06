@@ -1,0 +1,112 @@
+✅ When You Install a Package, What Happens?
+
+When you install a package using apt or dpkg, the .deb file is:
+
+Downloaded (by APT) and stored in /var/cache/apt/archives/
+
+Unpacked and extracted
+
+Files are placed into their respective directories depending on their type and function
+
+-----
+🗂️ Key Package File Locations in Ubuntu
+
+| Directory    | Purpose                                                              | Example Files                      |
+| ------------ | -------------------------------------------------------------------- | ---------------------------------- |
+| `/usr/bin`   | User binaries (main executables)                                     | `nano`, `curl`, `python3`          |
+| `/usr/sbin`  | System binaries (admin tools)                                        | `apache2`, `sshd`                  |
+| `/etc`       | System-wide configuration files                                      | `/etc/nginx/nginx.conf`            |
+| `/var`       | Variable data: logs, mail, databases                                 | `/var/log/syslog`, `/var/www/html` |
+| `/usr/lib`   | Shared libraries                                                     | `libpython3.10.so`                 |
+| `/usr/share` | Architecture-independent data                                        | icons, man pages                   |
+| `/lib`       | Essential shared libraries                                           | `ld-linux.so`                      |
+| `/bin`       | Essential system binaries (now often symlinked to `/usr/bin`)        | `ls`, `cp`, `bash`                 |
+| `/sbin`      | System administration binaries (also mostly merged into `/usr/sbin`) | `reboot`, `fsck`                   |
+| `/opt`       | Optional/additional software (e.g., Chrome)                          | `/opt/google/chrome/`              |
+| `/home`      | User data and configs                                                | `~/.bashrc`, `~/Downloads`         |
+
+--------
+🔧 Tools to See Installed Package Files
+
+🔹 dpkg -L <package>
+
+Lists all files installed by a package.
+
+dpkg -L nginx
+
+
+🔸 Output:
+
+/.
+/etc
+/etc/nginx
+/etc/nginx/nginx.conf
+/usr/sbin/nginx
+/usr/share/doc/nginx
+
+----
+
+🔍 dpkg -S <file-path>
+
+Find out which package owns a file.
+
+dpkg -S /usr/sbin/nginx
+
+
+Output:
+
+nginx: /usr/sbin/nginx
+
+---
+
+🔍 which <command> — Path to an executable
+
+which nano
+
+
+Output:
+
+/usr/bin/nano
+
+----
+
+🔍 whereis <command> — All related binary, source, and man files
+
+whereis curl
+
+Output:
+
+curl: /usr/bin/curl /usr/share/man/man1/curl.1.gz
+
+----
+
+🔍 find — Search file system manually
+
+sudo find / -name nginx.conf 2>/dev/null
+
+Useful for manually locating config files.
+
+-----
+🔍 Understanding the Linux Filesystem Structure (Quick Guide)
+
+| Path                                     | What's Inside                  |
+| ---------------------------------------- | ------------------------------ |
+| `/bin`, `/sbin`, `/usr/bin`, `/usr/sbin` | Executables                    |
+| `/etc`                                   | Config files                   |
+| `/var/log`                               | Logs                           |
+| `/usr/lib`, `/lib`                       | Shared libraries               |
+| `/usr/share`                             | Documentation, icons           |
+| `/home/<user>`                           | User's personal files          |
+| `/opt`                                   | 3rd-party software             |
+| `/tmp`                                   | Temporary files (auto-cleaned) |
+
+-----
+✅ Summary
+
+| Command               | Purpose                             |
+| --------------------- | ----------------------------------- |
+| `dpkg -L <package>`   | List installed files from a package |
+| `dpkg -S <file>`      | Find which package owns a file      |
+| `which <cmd>`         | Locate the binary                   |
+| `whereis <cmd>`       | Show binary, source, and docs       |
+| `find / -name <file>` | Manually search the file system     |

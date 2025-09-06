@@ -1,0 +1,117 @@
+🧠 What Are GPG Keys in APT?
+
+APT uses GPG (GNU Privacy Guard) keys to verify the authenticity and integrity of packages before installation or upgrade.
+
+📦 Without GPG key verification, your system could be tricked into installing malicious or tampered software.
+
+---
+🔐 How GPG Works in APT
+
+Each repository provides a GPG public key.
+
+When you update your system (apt update), Ubuntu downloads metadata and verifies its signature using the repo’s GPG key.
+
+If the key isn’t present or is invalid → you'll get errors like:
+
+NO_PUBKEY <key-id>
+
+---
+📂 Where Are GPG Keys Stored?
+
+| Path                           | Description                              |
+| ------------------------------ | ---------------------------------------- |
+| `/etc/apt/trusted.gpg`         | Legacy storage for trusted keys          |
+| `/etc/apt/trusted.gpg.d/*.gpg` | Modern recommended location              |
+| `apt-key` (deprecated)         | Was used to manage keys, now discouraged |
+
+🔒 Keys in these locations are trusted — APT assumes packages signed by them are valid.
+
+---
+🛠️ How to Add a GPG Key for a Repository
+
+✅ Method 1: Add Key via URL (Preferred)
+
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | \
+sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/docker.gpg
+
+
+🧩 Command Breakdown:
+
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg
+
+curl: Command-line tool to fetch data from URLs.
+
+-f: Fail silently on HTTP errors (e.g. 404).
+
+-s: Silent mode (no progress meter).
+
+-S: Show error if one occurs (useful with -s).
+
+-L: Follow redirects if the URL is redirected.
+
+Purpose: Downloads Docker’s GPG key from their official repository.
+
+| (pipe)
+
+Passes the output of the curl command to the next command (gpg).
+
+sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/docker.gpg
+
+sudo: Run the command with superuser privileges.
+
+gpg: GNU Privacy Guard – handles cryptographic signatures.
+
+--dearmor: Converts the ASCII-armored GPG key into binary format (APT expects binary format).
+
+-o /etc/apt/trusted.gpg.d/docker.gpg: Outputs the binary key to a file in the trusted GPG directory.
+
+------
+✅ Method 2: Add Key via wget (Same idea)
+
+wget -qO - https://packages.microsoft.com/keys/microsoft.asc | \
+gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/microsoft.gpg > /dev/null
+
+This command downloads Microsoft's GPG key, converts it into binary format, and saves it to APT's trusted key directory so that packages from Microsoft's repositories can be verified.
+
+🧩 Step-by-Step Breakdown
+
+🔹 wget -qO - https://packages.microsoft.com/keys/microsoft.asc
+
+wget: A tool to download files from the web.
+
+-q: Quiet mode (suppress output).
+
+-O -: Output the downloaded file to stdout (i.e., the terminal), not a file.
+
+👉 What it does:
+Downloads the Microsoft GPG public key and outputs it directly to the terminal (instead of saving it as a file).
+
+🔹 | gpg --dearmor
+
+|: Pipe the output of the previous command into the next.
+
+gpg --dearmor: Converts the ASCII-armored GPG key to a binary format (required by APT).
+
+👉 What it does:
+Converts the GPG key into the format that APT expects.
+
+🔹 | sudo tee /etc/apt/trusted.gpg.d/microsoft.gpg
+
+tee: Reads from standard input and writes to a file and also outputs to stdout.
+
+sudo: Required to write to a system directory.
+
+/etc/apt/trusted.gpg.d/microsoft.gpg: Location where trusted GPG keys are stored for APT.
+
+👉 What it does:
+
+Writes the binary key to APT’s trusted keyring directory so APT can trust Microsoft packages.
+
+🔹 > /dev/null
+
+> /dev/null: Discards the standard output of the tee command.
+
+👉 What it does:
+
+Suppresses any output that tee would normally print to the screen, keeping the terminal clean.
+
