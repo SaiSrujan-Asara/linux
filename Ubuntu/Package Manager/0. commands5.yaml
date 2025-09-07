@@ -1,0 +1,25 @@
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+🔹 5. snap — Ubuntu’s Modern Package Manager
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+
+Used for sandboxed, containerized apps. Preinstalled on Ubuntu 20.04+
+
+| Command              | Description                     |
+| -------------------- | ------------------------------- |
+| `snap find <term>`   | Search snaps                    |
+| `snap install <pkg>` | Install snap                    |
+| `snap remove <pkg>`  | Remove snap                     |
+| `snap refresh`       | Update snaps                    |
+| `snap list`          | List installed snaps            |
+| `snap info <pkg>`    | Info about snap                 |
+| `snap revert <pkg>`  | Revert to previous version      |
+| `snap disable <pkg>` | Disable snap                    |
+| `snap enable <pkg>`  | Re-enable snap                  |
+| `snap restart <pkg>` | Restart snap                    |
+| `snap services`      | Show snap services              |
+| `snap connections`   | Show interface connections      |
+| `snap logs <pkg>`    | View logs                       |
+| `snap abort <id>`    | Abort a snap change in progress |
+

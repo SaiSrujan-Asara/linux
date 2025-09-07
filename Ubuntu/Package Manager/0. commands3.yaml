@@ -1,0 +1,242 @@
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+🔹 3. apt-cache — Querying the APT Database
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+
+| Command                    | Description               |
+| -------------------------- | ------------------------- |
+| `apt-cache search <term>`  | Search packages           |
+| `apt-cache show <pkg>`     | Show package info         |
+| `apt-cache policy <pkg>`   | Show install candidate    |
+| `apt-cache depends <pkg>`  | Show dependencies         |
+| `apt-cache rdepends <pkg>` | Show reverse dependencies |
+| `apt-cache stats`          | Show cache stats          |
+| `apt-cache unmet`          | List unmet dependencies   |
+| `apt-cache gencaches`      | Rebuild cache files       |
+
+---
+apt-cache search
+---
+apt-cache search <keyword> searches the local package database for package names and descriptions that match the keyword or patter
+
+Example 1: Search for packages related to nginx
+
+apt-cache search nginx
+
+Output:
+
+nginx - small, powerful, scalable web/proxy server
+nginx-common - small, powerful, scalable web/proxy server - common files
+nginx-core - nginx web/proxy server (standard version)
+
+| Aspect                | `apt-cache search`                                  | `apt search`                                                                                 |
+| --------------------- | --------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| **Purpose**           | Search package names and descriptions               | Search package names and descriptions with richer output                                     |
+| **Introduced in**     | Older, part of the classic APT tools                | Newer, part of the `apt` command introduced around Ubuntu 16.04+                             |
+| **Output format**     | Simple, plain list of `package - description` pairs | More structured with color highlighting, showing installed/not installed status and versions |
+| **Search scope**      | Matches package name & short description            | Matches package name, short description, and long description                                |
+| **Performance**       | Slightly faster, minimal output                     | Slightly slower, more detailed output                                                        |
+| **Metadata source**   | Uses local cache (`/var/lib/apt/lists/`)            | Uses local cache (same as `apt-cache`)                                                       |
+| **User-friendliness** | Less friendly output, no color or sorting           | More user-friendly, color-coded, and categorized output                                      |
+| **Additional info**   | No info on install status                           | Shows if package is installed or not, and the candidate version                              |
+| **Syntax**            | `apt-cache search <keyword>`                        | `apt search <keyword>`                                                                       |
+
+---
+apt-cache show
+---
+
+1️⃣ What is apt-cache show?
+
+Displays detailed information about one or more packages.
+
+Shows metadata like version, description, dependencies, maintainer, size, and more.
+
+Reads from the local APT package cache (so make sure to run apt update regularly).
+
+| Aspect                       | `apt-cache show`                                                       | `apt show`                                                                                          |
+| ---------------------------- | ---------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| **Introduced in**            | Older command, part of classic APT tools                               | Newer command, introduced with the `apt` command wrapper                                            |
+| **Output format**            | Plain text, minimal formatting                                         | More user-friendly, with color highlighting and clearer layout                                      |
+| **Information shown**        | Package metadata: version, dependencies, maintainer, description, etc. | Same metadata plus additional info like installed version, repository info, and installation status |
+| **Installation status info** | Does NOT show if the package is installed or not                       | Shows whether package is installed and the installed version                                        |
+| **Repository info**          | Shows origin but no detailed repo info                                 | Shows the repository from which the package comes                                                   |
+| **Formatting & readability** | Basic, plain-text output                                               | Enhanced, color-coded output for better readability                                                 |
+| **Usage context**            | Mainly scripting or simple metadata inspection                         | More suited for interactive use                                                                     |
+| **Example command**          | `apt-cache show curl`                                                  | `apt show curl`                                                                                     |
+
+---
+apt cache policy
+---
+
+1️⃣ What is apt-cache policy?
+
+Shows detailed information about available versions of a package.
+
+Shows from which repositories the versions come.
+
+Shows the currently installed version (if any).
+
+Displays the priority (pinning) of the package versions.
+
+| Aspect                  | `apt-cache policy`                                             | `apt policy`                                                                 |
+| ----------------------- | -------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| **Command type**        | Older, classic APT tool                                        | Newer, part of `apt` command wrapper                                         |
+| **Output format**       | Plain text, minimal formatting                                 | More user-friendly with colors and formatting                                |
+| **Information shown**   | Installed version, candidate version, version table, repo URLs | Same info but with enhanced readability and color coding                     |
+| **Additional features** | Only shows package policy                                      | Also displays repository priorities, pins, and overall system package policy |
+| **User friendliness**   | More suitable for scripts or minimal info                      | Better for interactive use                                                   |
+| **Examples**            | `apt-cache policy curl`                                        | `apt policy curl`                                                            |
+
+
+---
+apt-cache depends
+---
+
+1️⃣ What is apt-cache depends?
+
+Shows the immediate dependencies of a package.
+
+Helps you understand what packages a specific package requires to function.
+
+Displays other related package relationships like recommends, suggests, conflicts, and breaks (with flags).
+
+2️⃣ Example
+
+Check dependencies for ansible:
+
+apt-cache depends ansible
+
+ansible
+  Depends: python3-cryptography
+  Depends: python3-jinja2
+  Depends: python3-packaging
+  Depends: python3-yaml
+  Depends: <python3:any>
+    python3
+ |Depends: openssh-client
+  Depends: python3-paramiko
+  Depends: python3-pycryptodome
+  Depends: python3-distutils
+  Depends: python3-dnspython
+  Depends: python3-httplib2
+  Depends: python3-netaddr
+  Breaks: <ansible-base>
+  Recommends: python3-argcomplete
+  Recommends: python3-jmespath
+  Recommends: python3-kerberos
+  Recommends: python3-libcloud
+  Recommends: python3-selinux
+  Recommends: python3-winrm
+  Recommends: python3-xmltodict
+  Suggests: cowsay
+  Suggests: sshpass
+  Replaces: <ansible-base>
+
+3️⃣ Output explanation
+
+  | Prefix        | Meaning                                                                |
+| ------------- | ---------------------------------------------------------------------- |
+| `Depends:`    | Required packages that **must be installed**                           |
+| `Recommends:` | Recommended packages, not strictly necessary but improve functionality |
+| `Suggests:`   | Suggested packages, optional additions                                 |
+| `Conflicts:`  | Packages that cannot coexist with this package                         |
+| `Breaks:`     | Packages that can break this package if installed                      |
+
+
+---
+apt-cache rdepends
+---
+
+1️⃣ What is apt-cache rdepends?
+
+Shows which packages depend on a given package.
+
+Helps you understand the reverse relationship — what packages require this package to work.
+
+Useful for impact analysis before removing or upgrading a package.
+
+2️⃣ Example
+
+Check which packages depend on libc6:
+
+apt-cache rdepends libc6
+
+Sample output:
+
+libc6
+Reverse Depends:
+  bash
+  coreutils
+  dpkg
+  curl
+  ...
+
+This means packages like bash, coreutils, dpkg, and curl require libc6.
+
+3️⃣ Use cases
+
+Before removing a package: Know what else will break or be affected.
+
+Dependency troubleshooting: Find all packages relying on a core library or tool.
+
+System impact analysis: Understand package interconnections.
+
+| Command                    | Description                                   |
+| -------------------------- | --------------------------------------------- |
+| `apt-cache rdepends <pkg>` | Show packages that directly depend on `<pkg>` |
+| `apt-rdepends -r <pkg>`    | Show recursive reverse dependencies           |
+
+---
+apt-cache unment
+---
+
+1️⃣ What is apt-cache unmet?
+
+This command shows unmet dependencies on your system.
+
+It helps you identify packages that are broken, missing required dependencies, or in a half-installed state.
+
+It’s often used during or after a failed installation, upgrade, or removal of packages.
+
+2️⃣ Syntax
+
+apt-cache unmet
+
+No additional arguments needed.
+
+3️⃣ Sample Output
+
+The following packages have unmet dependencies:
+  
+  examplepkg:
+    Depends: libexample1 (>= 2.0) but it is not installable
+    Recommends: example-helper but it is not going to be installed
+
+---
+apt-cache gencaches
+---
+
+  1️⃣ What is apt-cache gencaches?
+
+It manually regenerates the APT package cache.
+
+Essentially, it rebuilds internal data structures that APT uses to resolve dependencies and locate packages.
+
+This is rarely needed, but can be useful when troubleshooting cache corruption or after manually modifying files in /var/lib/apt/lists/ or related directories.
+
+It regenerates:
+
+The package cache files stored in:
+
+/var/cache/apt/pkgcache.bin (binary package cache)
+
+/var/cache/apt/srcpkgcache.bin (source package cache)
+
+These files are used to speed up operations like searching, showing dependencies, etc.
+
+This does not affect:
+
+The downloaded package lists from apt update (i.e., not the /var/lib/apt/lists/ directory).
+
+Installed packages.

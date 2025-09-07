@@ -1,0 +1,13 @@
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+🔹 7. add-apt-repository & Related Commands
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+
+| Command                                                 | Description      |
+| ------------------------------------------------------- | ---------------- |
+| `add-apt-repository ppa:<ppa>`                          | Add PPA          |
+| `add-apt-repository "deb [arch] http://... focal main"` | Add custom repo  |
+| `add-apt-repository --remove ...`                       | Remove repo      |
+| `software-properties-gtk`                               | GUI repo manager |
+| `software-properties-cli`                               | CLI interface    |

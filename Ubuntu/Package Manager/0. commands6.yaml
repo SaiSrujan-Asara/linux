@@ -1,0 +1,20 @@
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+🔹 6. flatpak — Universal Linux App Platform (optional)
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+
+Not installed by default; you can install it via APT.
+
+| Command                        | Description     |
+| ------------------------------ | --------------- |
+| `flatpak install <repo> <pkg>` | Install app     |
+| `flatpak uninstall <pkg>`      | Uninstall       |
+| `flatpak update`               | Update all      |
+| `flatpak search <term>`        | Search          |
+| `flatpak list`                 | List installed  |
+| `flatpak info <pkg>`           | Show app info   |
+| `flatpak run <pkg>`            | Run app         |
+| `flatpak repair`               | Fix system      |
+| `flatpak override`             | Set permissions |
+

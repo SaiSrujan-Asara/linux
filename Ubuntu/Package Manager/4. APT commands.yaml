@@ -11,6 +11,26 @@
 | `apt list --upgradable`                | List packages that can be upgraded                 | `apt list --upgradable`                |
 | `apt edit-sources`                     | Edit repository sources list with default editor   | `sudo apt edit-sources`                |
 
+| Command                  | Purpose                                     |
+| ------------------------ | ------------------------------------------- |
+| `apt remove`             | Removes software, keeps dependencies/config |
+| `apt purge`              | Removes software + config files             |
+| `apt autoremove`         | Removes unused dependencies                 |
+| `apt autoremove --purge` | Also removes unused configs                 |
+| `apt clean`              | Clears all cached `.deb` downloads          |
+| `apt autoclean`          | Clears outdated `.deb` downloads only       |
+
+
+| Command                      | Purpose                                                                          |
+| ---------------------------- | -------------------------------------------------------------------------------- |
+| `apt-cache search <keyword>` | Search for packages by name/description                                          |
+| `apt-cache policy <pkg>`     | Show versions and which repo provides it                                         |
+| `apt-cache depends <pkg>`    | Show package dependencies                                                        |
+| `apt-cache rdepends <pkg>`   | Show reverse dependencies                                                        |
+| `apt-cache showpkg <pkg>`    | Show very detailed raw info including dependencies, reverse deps, versions, etc. |
+
+
+
 
 ----------------------------
 

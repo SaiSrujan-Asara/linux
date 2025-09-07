@@ -1,0 +1,563 @@
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+🔹 4. dpkg — Low-Level Debian Package Manager
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+
+Works directly with .deb files. apt uses this under the hood.
+
+| Command                 | Description                      |
+| ----------------------- | -------------------------------- |
+| `dpkg -i <pkg>.deb`     | Install `.deb` file              |
+| `dpkg -I <pkg>`         | view package metadata
+| `dpkg -r <pkg>`         | Remove package                   |
+| `dpkg -P <pkg>`         | Purge package                    |
+| `dpkg -l`               | List installed packages          |
+| `dpkg -l <pkg>`         | List specific package            |
+| `dpkg -s <pkg>`         | Package status                   |
+| `dpkg -L <pkg>`         | Files installed by package       |
+| `dpkg -S <file>`        | Find package that owns file      |
+| `dpkg -c <pkg>.deb`     | List contents of `.deb` file     |
+| `dpkg --configure -a`   | Fix partially installed packages |
+| `dpkg --get-selections` | Get package selection list       |
+| `dpkg --set-selections` | Set selections (batch install)   |
+
+🔹 What is dpkg?
+
+dpkg is the core package management tool on Debian-based systems (including Ubuntu).
+
+Unlike apt or apt-get, it does not handle dependencies automatically.
+
+It installs, configures, removes, and queries .deb files directly.
+
+Think of dpkg as the manual gearbox of package management — full control, but you need to know what you're doing.
+
+---
+dpkg -i <pkg>.deb
+---
+
+🔹 What does it do?
+
+The dpkg -i command installs a .deb file onto your system.
+
+1) It unpacks the package
+
+2) Places the files in the appropriate directories
+
+3) Runs pre/post install scripts
+
+4) Registers the package in the APT database
+
+⚠️ Note: It does not handle dependencies. If required dependencies are missing, the install may fail or leave the system in an inconsistent state.
+
+🔍 What Happens Internally?
+
+When you run dpkg -i package.deb, it:
+
+Unpacks the .deb into:
+
+1) System directories (e.g. /usr/bin, /usr/lib, /etc, etc.)
+
+Executes:
+
+1) preinst (before install)
+
+2) postinst (after install) scripts from the .deb file
+
+Registers the package metadata:
+
+1) In /var/lib/dpkg/status
+
+2) In /var/lib/dpkg/info/<pkg>.* (scripts, list of files, etc.)
+
+⚠️ Best Practices
+
+| Tip                                                      | Why                                     |
+| -------------------------------------------------------- | --------------------------------------- |
+| Always follow `dpkg -i` with `apt-get -f install`        | To fix dependencies                     |
+| Only install `.deb` from **trusted sources**             | Prevent malware or system instability   |
+| Test `.deb` installs in a VM or container                | Prevent breaking production systems     |
+| Use `dpkg -I` to inspect package metadata before install | Verify dependencies, architecture, etc. |
+
+
+---
+`dpkg -I <pkg>`
+---
+
+🔹 What is dpkg -I?
+
+The dpkg -I command (short for --info) shows information about a .deb file without installing it.
+
+It's like previewing a package: version, dependencies, architecture, description, maintainer, etc.
+
+This is especially useful before installing software from third-party sources.
+
+dpkg -I htop_3.0.5-1_amd64.deb
+
+🧾 Sample Output
+
+ new Debian package, version 2.0.
+ size 123456 bytes: control archive=4k
+     1234 bytes, 25 lines     control
+     2345 bytes, 30 lines     md5sums
+     7890 bytes, 120 lines    postinst
+ Package: htop
+ Version: 3.0.5-1
+ Architecture: amd64
+ Maintainer: John Doe <john@example.com>
+ Installed-Size: 512
+ Depends: libc6 (>= 2.29), libncursesw6 (>= 6)
+ Description: Interactive processes viewer
+ Homepage: https://htop.dev
+
+
+---
+dpkg -r <package>
+---
+
+🔹 What is dpkg -r?
+
+The -r option stands for remove.
+
+It removes an installed package, but retains configuration files.
+
+It's the low-level equivalent of:
+
+sudo apt remove <package>
+
+✅ It only works on installed packages.
+❌ It does not remove dependencies that were installed with the package.
+
+🔄 Equivalent Commands
+
+| Command               | Description           |
+| --------------------- | --------------------- |
+| `sudo dpkg -r pkg`    | Remove, keep configs  |
+| `sudo dpkg -P pkg`    | Purge, remove all     |
+| `sudo apt remove pkg` | High-level equivalent |
+| `sudo apt purge pkg`  | High-level purge      |
+
+---
+dpkg -P <pkg>
+---
+
+🔹 What does dpkg -P do?
+
+The -P or --purge option removes the installed package completely:
+
+Removes binaries
+
+Removes configuration files
+
+Deletes scripts, logs, and related metadata
+
+After this command, it’s like the package was never installed.
+
+✅ It is the low-level equivalent of: sudo apt purge <package>
+
+🧹 What’s Removed?
+
+| Item                               | Removed? |
+| ---------------------------------- | -------- |
+| Executables (`/usr/bin/htop`)      | ✅        |
+| Libraries (`/usr/lib/...`)         | ✅        |
+| Configs (`/etc/htoprc` or similar) | ✅        |
+| Metadata (`/var/lib/dpkg/info`)    | ✅        |
+| Entry in `/var/lib/dpkg/status`    | ✅        |
+
+
+---
+dpkg -l
+---
+
+🔹 What does dpkg -l do?
+
+Lists all packages known to dpkg, including:
+
+Installed
+
+Removed (but config left)
+
+Broken/incomplete
+
+Displays package name, version, architecture, and status.
+
+It's a great way to audit installed software or verify what's on a system.
+
+🔧 Syntax
+
+dpkg -l <package-name>
+
+🧾 Sample Output
+
+Desired=Unknown/Install/Remove/Purge/Hold
+| Status=Not/Inst/Conf-Files/Unpacked/halF-conf/Half-inst/trig-aWait/Trig-pend
+|/ Err?=(none)/Reinst-required (Status,Err: uppercase=bad)
+||/ Name           Version       Architecture Description
++++-==============-=============-============-=================================
+ii  htop           3.0.5-1       amd64        Interactive processes viewer
+rc  apache2        2.4.41-4      amd64        Apache HTTP Server
+
+
+📌 Columns Explained
+
+| Column                           | Meaning                                        |
+| -------------------------------- | ---------------------------------------------- |
+| **First char** (Desired action)  | `i` = install, `r` = remove, `p` = purge       |
+| **Second char** (Current status) | `i` = installed, `c` = config files only       |
+| **Third char** (Error status)    | ` ` (space) = no error, `R` = reinstall needed |
+| **Name**                         | Package name                                   |
+| **Version**                      | Installed version                              |
+| **Architecture**                 | e.g. `amd64`, `arm64`, `all`                   |
+| **Description**                  | Brief summary of what the package is           |
+
+🚩 Common Status Codes
+
+| Code | Meaning                         |
+| ---- | ------------------------------- |
+| `ii` | Installed                       |
+| `rc` | Removed, config files remain    |
+| `un` | Unknown                         |
+| `pn` | Package not installed           |
+| `hi` | Held Installed                  |
+| `ri` | Reinstall required (incomplete) |
+
+---
+`dpkg -s <pkg>`
+---
+
+🔹 What is dpkg -s?
+
+dpkg -s (or --status) shows detailed status and metadata of an installed package.
+
+It reads from the system’s package database (/var/lib/dpkg/status) to give information like:
+
+Version
+
+Maintainer
+
+Dependencies
+
+Status (installed/configured/etc.)
+
+Short and long description
+
+🔍 This is like apt show <pkg>, but it only shows information if the package is installed (not available in the repo).
+
+📂 Example
+
+dpkg -s htop
+
+Sample Output:
+
+Package: htop
+Status: install ok installed
+Priority: optional
+Section: utils
+Installed-Size: 360
+Maintainer: John Doe <john@example.com>
+Architecture: amd64
+Version: 3.0.5-1
+Depends: libc6 (>= 2.29), libncursesw6 (>= 6)
+Description: interactive process viewer
+ Htop is an interactive text-mode process viewer for Unix systems.
+Homepage: https://htop.dev
+
+🔁 Difference from Similar Commands
+
+| Command          | Shows info from | Shows only if installed?           | Shows available versions? |
+| ---------------- | --------------- | ---------------------------------- | ------------------------- |
+| `dpkg -s <pkg>`  | Local database  | ✅ Yes                              | ❌ No                      |
+| `apt show <pkg>` | APT metadata    | ❌ No (works even if not installed) | ✅ Yes                     |
+| `dpkg -l <pkg>`  | Local database  | ✅ Yes                              | ❌ No                      |
+
+
+---
+dpkg -L <package>
+---
+
+🔹 What is dpkg -L?
+
+The -L flag (short for --listfiles) lists all the files and directories that were installed on the system by a specific installed package.
+
+This is useful for:
+
+Locating config files, binaries, man pages, libraries, etc.
+
+Troubleshooting file paths or missing files
+
+Understanding what a package actually puts on your system
+
+✅ It only works for packages that are already installed.
+
+📂 Example
+
+Let’s try it with htop:
+
+dpkg -L htop
+
+Sample Output:
+/.
+usr
+usr/bin
+usr/bin/htop
+usr/share
+usr/share/man
+usr/share/man/man1
+usr/share/man/man1/htop.1.gz
+usr/share/doc
+usr/share/doc/htop
+usr/share/doc/htop/changelog.Debian.gz
+usr/share/doc/htop/copyright
+
+📌 Real Use Cases
+
+| Scenario                                 | How `dpkg -L` Helps                         |
+| ---------------------------------------- | ------------------------------------------- |
+| You want to find where a binary is       | Shows the full path (e.g., `/usr/bin/htop`) |
+| You want to delete config files manually | Lists `/etc` or `/usr/share` paths          |
+| You want to backup a package’s files     | See what files to include                   |
+| You want to audit for security reviews   | Know exactly what the package changes       |
+| You want to reinstall missing files      | Compare list vs. what's on disk             |
+
+🛠 Compare with Related Commands
+
+| Command             | Description                                    |
+| ------------------- | ---------------------------------------------- |
+| `dpkg -L <pkg>`     | Lists files installed by a package             |
+| `dpkg -c <pkg>.deb` | Lists files *inside* a `.deb` (before install) |
+| `dpkg -S <file>`    | Finds which package owns a given file          |
+| `dpkg -s <pkg>`     | Shows status & metadata of installed package   |
+
+
+---
+dpkg -S <file>
+---
+
+🔹 What does dpkg -S do?
+
+dpkg -S (or --search) lets you find out which installed package owns a specific file.
+
+It answers the question:
+
+👉 "Where did this file come from?"
+
+Very helpful for debugging, cleaning, reverse-engineering, and security auditing.
+
+✅ It only works for files installed via dpkg (i.e., via apt, dpkg, etc.)
+
+📂 Example 1: Find who owns /usr/bin/htop
+
+dpkg -S /usr/bin/htop
+
+Output:
+
+htop: /usr/bin/htop
+
+This means the file /usr/bin/htop is installed by the htop package.
+
+📂 Example 2: Search by filename only
+
+dpkg -S htop
+
+May return:
+
+htop: /usr/bin/htop
+htop: /usr/share/man/man1/htop.1.gz
+
+⚠️ Be cautious: This may return multiple results if multiple packages have similar files.
+
+📂 Example 3: Find owner of a config file
+
+dpkg -S /etc/ssh/sshd_config
+
+Output:
+
+openssh-server: /etc/ssh/sshd_config
+
+---
+dpkg -c <package.deb>
+---
+
+🔹 What does dpkg -c do?
+
+The -c (or --contents) option lists the files inside a .deb package, similar to tar -tvf.
+
+It’s used to inspect what a .deb will install before actually installing it.
+
+Shows:
+
+1) Full file paths
+
+2) Permissions
+
+3) Ownership
+
+4) Timestamps
+
+5) File sizes
+
+✅ Very useful for:
+
+1) Verifying file locations
+
+2) Avoiding conflicts
+
+3) Examining third-party .deb packages
+
+Example:
+
+dpkg -c htop_3.0.5-1_amd64.deb
+
+Output (trimmed):
+
+drwxr-xr-x root/root         0 2021-09-01 12:00 ./
+drwxr-xr-x root/root         0 2021-09-01 12:00 ./usr/
+drwxr-xr-x root/root         0 2021-09-01 12:00 ./usr/bin/
+-rwxr-xr-x root/root     97280 2021-09-01 12:00 ./usr/bin/htop
+drwxr-xr-x root/root         0 2021-09-01 12:00 ./usr/share/doc/htop/
+-rw-r--r-- root/root      1234 2021-09-01 12:00 ./usr/share/doc/htop/copyright
+
+---
+dpkg --configure -a
+---
+
+🔹 What is dpkg --configure -a?
+
+This command tells dpkg to configure all unpacked but unconfigured packages on your system.
+
+“Configure” means:
+
+Run post-installation scripts (like postinst scripts).
+
+Set up system settings, create necessary files, register services, etc.
+
+Typically used to fix broken package states after an interrupted install or upgrade.
+
+🔧 Syntax
+
+sudo dpkg --configure -a
+
+i) --configure can also be used with a specific package name to configure only that package.
+
+ii) -a or --pending means all unpacked but unconfigured packages.
+
+📋 What Happens Behind the Scenes?
+
+The package files are already extracted onto the system.
+
+dpkg --configure runs the package’s post-installation script (postinst) located in /var/lib/dpkg/info/<package>.postinst.
+
+It performs necessary setup tasks (e.g.,:
+
+i) creating users/groups,
+
+ii) starting services,
+
+iii) updating configuration files,
+
+iv) registering components).
+
+v) The package’s status is changed from “unpacked” to “installed” in dpkg's database.
+
+| Command                  | Description                                             |
+| ------------------------ | ------------------------------------------------------- |
+| `dpkg --configure <pkg>` | Configure only the specified package                    |
+| `apt-get -f install`     | Fix broken dependencies (may invoke `dpkg --configure`) |
+| `dpkg -i <file>.deb`     | Install and unpack a package                            |
+
+---
+dpkg --get-selections & dpkg --set-selections
+---
+
+🧠 What are they?
+
+These commands let you:
+
+Export the current list of package installation states (get-selections)
+
+Import or reapply those states to another system (set-selections)
+
+✅ Used for:
+
+Creating backup of installed packages
+
+Cloning system environments
+
+Restoring selected package states after reinstall
+
+
+🔹 1. dpkg --get-selections
+
+📋 What it does:
+
+Lists all packages and their current selection state (like install, hold, deinstall, etc.)
+
+🔧 Syntax:
+
+dpkg --get-selections
+
+🔧 To export to a file:
+
+dpkg --get-selections > packages.list
+
+🧾 Example Output:
+
+htop                                      install
+curl                                      install
+libreoffice                               deinstall
+vim                                       install
+nano                                      install
+
+🟢 The install state means the package is marked for installation.
+
+🔴 deinstall means the package is not installed, but still remembered in the dpkg database (config files may still be there).
+
+🔹 2. dpkg --set-selections
+
+📋 What it does:
+
+Takes a list (like from get-selections) and sets the desired installation state for each package.
+
+⚠️ It does not actually install or remove anything. It only sets selection status.
+
+You must run another command (like apt-get dselect-upgrade) to apply the changes.
+
+🔧 Syntax:
+
+sudo dpkg --set-selections < packages.list
+
+You usually pair this with apt-get dselect-upgrade or aptitude.
+
+-
+🛠️ Full Workflow: Clone Packages from One System to Another
+-
+
+✅ On Source Machine:
+
+dpkg --get-selections > pkg-list.txt
+
+✅ On Target Machine:
+
+Copy the file (pkg-list.txt) via scp, rsync, or USB.
+
+Set the selections:
+
+sudo dpkg --set-selections < pkg-list.txt
+
+Apply the package changes:
+
+sudo apt-get update
+sudo apt-get dselect-upgrade
+
+dselect-upgrade will install/remove packages to match the selection list.
+
+🔍 What Are the Selection States?
+
+| State       | Meaning                                                      |
+| ----------- | ------------------------------------------------------------ |
+| `install`   | Package is marked for installation                           |
+| `deinstall` | Package is removed but config files may remain               |
+| `purge`     | Package and config files are marked to be completely removed |
+| `hold`      | Package is on hold (prevent upgrades via apt)                |
+| `unknown`   | Status is unknown (rare or error)                            |

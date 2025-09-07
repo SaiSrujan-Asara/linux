@@ -1,0 +1,501 @@
+Ubuntu Package Manager: Complete Command List
+
+Ubuntu uses the APT (Advanced Package Tool) system as the default package manager for .deb packages. It's built over dpkg, and has multiple layers of tools.
+
+🔹 1. apt – High-level CLI for APT
+🔹 2. apt-get – Lower-level command-line tool for APT
+🔹 3. apt-cache – Querying package metadata
+🔹 4. dpkg – Debian Package Manager (Low-level tool)
+🔹 5. snap – Ubuntu's containerized package manager
+🔹 6. flatpak – Optional universal Linux packaging system
+🔹 7. software-properties-* – Tools for managing repositories
+🔹 8. add-apt-repository – Tool to add PPAs
+🔹 9. gdebi – For installing .deb files with dependencies
+🔹 10. synaptic – GUI-based package manager
+
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+🔹 1. apt — User-Friendly Package Manager Interface
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+
+Introduced in Ubuntu 16.04+ as a friendlier frontend to apt-get and apt-cache
+
+| Command               | Description                            |
+| --------------------- | -------------------------------------- |
+| `apt update`          | Update package list                    |
+| apt list --upgradable | See which packages apt upgrade will upgrade |
+| apt full-upgrade --dry-run | Simulates the upgrade process — no changes made |
+| apt full-upgrade --simulate | Simulates the upgrade process — no changes made. |
+| `apt upgrade`         | Upgrade installed packages             |
+| `apt full-upgrade`    | Upgrade, remove old packages if needed |
+| `apt install <pkg>`   | Install a package                      |
+| `apt reinstall <pkg>` | Reinstall a package                    |
+| `apt remove <pkg>`    | Remove package (keep config)           |
+| `apt purge <pkg>`     | Remove package and config files        |
+| `apt autoremove`      | Remove unneeded dependencies           |
+| `apt clean`           | Clear local repo of downloaded files   |
+| `apt autoclean`       | Remove old package files               |
+| `apt list`            | List packages (with filters)           |
+| `apt show <pkg>`      | Show package details                   |
+| `apt search <term>`   | Search packages                        |
+| `apt edit-sources`    | Edit sources.list                      |
+| `apt policy <pkg>`    | Show version and source info           |
+
+---
+apt update
+---
+
+📁 Understanding /var/lib/apt/lists/
+
+This directory contains:
+
+Compressed files downloaded from your APT repositories
+
+These files include:
+
+1) Package names
+
+2) Versions
+
+3) Descriptions
+
+4) Dependencies
+
+5) Maintainers
+
+And more...
+
+These files are generated/refreshed by: "sudo apt update"
+
+If you don’t run apt update, then the data is outdated, and:
+
+1) apt list --upgradable may not show new upgrades available
+
+2) apt show <package> may not reflect the latest version
+
+3) apt search results may be incomplete or stale
+
+4) You might miss security or bugfix upgrades
+
+---
+apt upgrade
+---
+| Feature                                  | `apt upgrade`                   | `apt full-upgrade`                 |
+| ---------------------------------------- | ------------------------------- | ---------------------------------- |
+| **Upgrades packages**                    | ✅ Yes                           | ✅ Yes                              |
+| **Installs new packages (dependencies)** | ❌ No                            | ✅ Yes                              |
+| **Removes existing packages**            | ❌ No                            | ✅ Yes                              |
+| **Safe for daily use**                   | ✅ Yes                           | ⚠️ Yes, with review                |
+| **Handles complex dependency changes**   | ❌ Skips them                    | ✅ Resolves them                    |
+| **Can upgrade kernel**                   | ⚠️ Only if no new deps/removals | ✅ Yes, always if available         |
+| **May hold back packages**               | ✅ Yes                           | ❌ No (tries to upgrade everything) |
+
+----
+apt install
+----
+
+| Use Case                  | Command Example                          |
+| ------------------------- | ---------------------------------------- |
+| Install one package       | `sudo apt install vim`                   |
+| Install multiple packages | `sudo apt install git curl wget`         |
+| Install specific version  | `sudo apt install nginx=1.18.0-0ubuntu1` |
+| Reinstall a package       | `sudo apt install --reinstall nginx`     |
+| Install local `.deb` file | `sudo apt install ./package.deb`         |
+
+| Option                      | Description                   | Example                                            |
+| --------------------------- | ----------------------------- | -------------------------------------------------- |
+| `-y`                        | Auto-confirm prompts          | `sudo apt install -y nginx`                        |
+| `--reinstall`               | Reinstall the package         | `sudo apt install --reinstall vim`                 |
+| `--download-only`           | Only download, don’t install  | `sudo apt install --download-only htop`            |
+| `--no-install-recommends`   | Skip recommended packages     | `sudo apt install --no-install-recommends firefox` |
+| `--simulate` or `--dry-run` | Simulate installation         | `sudo apt install --simulate docker.io`            |
+| `--target-release`          | Install from specific release | `sudo apt install -t stable package`               |
+| `--only-upgrade`            | Only upgrade, don’t install   | `sudo apt install --only-upgrade bash`             |
+
+
+| Feature / Behavior                  | `apt download htop`                                     | `sudo apt install --download-only htop`                           |
+| ----------------------------------- | ------------------------------------------------------- | ----------------------------------------------------------------- |
+| 🔧 **Purpose**                      | Downloads `.deb` file for manual install                | Prepares for installation but **only downloads**, doesn't install |
+| 📦 **What it downloads**            | Just the `.deb` file of the **specified package only**  | The package **plus all dependencies**                             |
+| 🧱 **Dependencies downloaded?**     | ❌ No                                                    | ✅ Yes                                                             |
+| 📝 **Requires root (`sudo`)?**      | ❌ No                                                    | ✅ Yes (since it interacts with the system APT cache)              |
+| 📁 **Download location**            | Current working directory                               | `/var/cache/apt/archives/`                                        |
+| 🚫 **Does it install the package?** | ❌ No                                                    | ❌ No                                                              |
+| 📥 **Use case**                     | Manual inspection, transfer, or installation via `dpkg` | Preparing for offline install (with dependencies)                 |
+
+---
+apt perform step by step operations for files and its folders
+---
+
+| Path                             | Purpose                      | Used During                      |
+| -------------------------------- | ---------------------------- | -------------------------------- |
+| `/etc/apt/sources.list`          | Repository list              | Before install (metadata lookup) |
+| `/etc/apt/sources.list.d/`       | Additional repos             | Before install                   |
+| `/var/lib/apt/lists/`            | Repo metadata cache          | Lookup available packages        |
+| `/var/cache/apt/archives/`       | Downloaded `.deb` packages   | Package download                 |
+| `/var/lib/dpkg/status`           | Installed package DB         | Update package state             |
+| `/var/lib/dpkg/info/`            | Scripts and metadata per pkg | During install                   |
+| `/var/log/apt/`                  | Logs of APT actions          | After install                    |
+| `/var/log/dpkg.log`              | Logs of dpkg actions         | After install                    |
+| `/usr/bin/`, `/usr/share/`, etc. | Package-installed files      | After install                    |
+| `/etc/apt/preferences.d/`        | Version pinning              | Influences version selection     |
+
+What Happens Step-by-Step During apt install htop
+
+| Step | Action                | Folder Involved                      |
+| ---- | --------------------- | ------------------------------------ |
+| 1️⃣  | Reads repo metadata   | `/var/lib/apt/lists/`                |
+| 2️⃣  | Resolves dependencies | Internal APT logic                   |
+| 3️⃣  | Downloads `.deb`      | `/var/cache/apt/archives/`           |
+| 4️⃣  | Extracts files        | `/usr/`, `/etc/`                     |
+| 5️⃣  | Runs postinst script  | `/var/lib/dpkg/info/htop.postinst`   |
+| 6️⃣  | Updates status DB     | `/var/lib/dpkg/status`               |
+| 7️⃣  | Logs the action       | `/var/log/apt/`, `/var/log/dpkg.log` |
+
+diff b/w binaries and config files
+
+| Type        | Location Example | Role             | Editable by User? | Impact of Deletion               |
+| ----------- | ---------------- | ---------------- | ----------------- | -------------------------------- |
+| Binary File | `/usr/bin/htop`  | Runs the program | No                | Program won’t run                |
+| Config File | `/etc/htoprc`    | Program settings | Yes               | Software uses defaults or breaks |
+
+---
+apt reinstall
+---
+
+| Command         | Binaries & Libraries | Configuration Files | When to Use                                                                                         |
+| --------------- | -------------------- | ------------------- | --------------------------------------------------------------------------------------------------- |
+| `apt reinstall` | ✅ Overwrites         | ✅ Keeps             | Reinstall a package to restore missing or corrupted binaries without affecting configuration files. |
+| `apt remove`    | ✅ Removes            | ✅ Keeps             | Uninstalls the package but retains configuration files for potential future reinstallation.         |
+| `apt purge`     | ✅ Removes            | ✅ Removes           | Completely uninstalls the package along with its configuration files.                               |
+
+---
+apt auto remove
+---
+Removes packages that were automatically installed as dependencies and are no longer needed.
+
+These are usually libraries or helper packages that were:
+
+i) Installed automatically as dependencies of a package
+
+ii) But are now orphaned because the original package was removed or upgraded
+
+APT marks packages in two ways:
+
+| Mark               | Meaning                                 |
+| ------------------ | --------------------------------------- |
+| **Auto-installed** | Installed automatically as a dependency |
+| **Manual**         | Installed by user explicitly            |
+
+| Command                | Purpose                                    |
+| ---------------------- | ------------------------------------------ |
+| `apt remove`           | Removes a package but keeps dependencies   |
+| `apt purge`            | Removes package + config                   |
+| `apt autoremove`       | Removes unused dependencies                |
+| `apt-get clean`        | Clears package cache                       |
+| `apt-mark auto/manual` | Marks install type to influence autoremove |
+
+| Command                    | What It Does                             |
+| -------------------------- | ---------------------------------------- |
+| `apt autoremove`           | Removes unused auto-installed packages   |
+| `apt-mark auto`            | Marks packages as auto-installed         |
+| `apt-mark manual`          | Prevents package from being auto-removed |
+| `apt autoremove --dry-run` | Previews what will be removed            |
+
+| Command                  | Removes Binaries | Removes Configs | Removes Auto-installed Only? |
+| ------------------------ | ---------------- | --------------- | ---------------------------- |
+| `apt remove <pkg>`       | ✅ Yes            | ❌ No            | ❌ No                         |
+| `apt purge <pkg>`        | ✅ Yes            | ✅ Yes           | ❌ No                         |
+| `apt autoremove`         | ✅ Yes            | ❌ No            | ✅ Yes                        |
+| `apt autoremove --purge` | ✅ Yes            | ✅ Yes           | ✅ Yes                        |
+
+---
+apt clean & auto clan
+---
+
+📦 What Is the APT Cache?
+
+It stores downloaded .deb files when you install packages via apt in "/var/cache/apt/archives/"
+
+Examples:
+
+i) bash_5.1.16-2ubuntu1_amd64.deb
+
+ii) curl_7.81.0-1ubuntu1.10_amd64.deb
+
+APT keeps these .deb files in case you:
+
+i) Need to reinstall without redownloading
+
+ii) Use them on other systems
+
+But they can accumulate over time, wasting hundreds of MBs or even GBs.
+
+🔄 Command 1: sudo apt clean
+
+✅ What it does:
+
+Deletes ALL .deb files from APT’s cache
+
+Empties:
+
+/var/cache/apt/archives/
+/var/cache/apt/archives/partial/
+
+🧽 Use when:
+
+You want to free up disk space
+
+You're done installing packages
+
+You don’t need to reinstall packages offline
+
+🔄 Command 2: sudo apt autoclean
+
+✅ What it does:
+
+Deletes only obsolete .deb files from APT’s cache
+
+Keeps .deb files that match currently installed packages or ones available in the current repositories
+
+Removes .deb files that can no longer be downloaded or installed
+
+🧽 Use when:
+
+You want to clean up old, useless files but still cache useful ones
+
+You want to be conservative with cleanup
+
+| Feature                            | `apt clean`   | `apt autoclean`   |
+| ---------------------------------- | ------------- | ----------------- |
+| Removes `.deb` files?              | ✅ All of them | ✅ Only old/unused |
+| Keeps useful `.deb`?               | ❌ No          | ✅ Yes             |
+| Empties `/var/cache/apt/archives/` | ✅ Yes         | ❌ No (partially)  |
+| Best for freeing max disk space    | ✅ Yes         | ❌ Not fully       |
+| Safe to use?                       | ✅ Yes         | ✅ Yes             |
+
+⚠️ Important Notes
+
+i) These commands do NOT uninstall or remove any packages — only cached installers.
+
+ii) Once cleaned, you can’t reinstall packages without redownloading them.
+
+iii) Useful on low-storage environments (like VPS, embedded systems, etc.)
+
+---
+apt list
+---
+
+apt list is an information command, used to query and view packages in the APT system. It's not for installing or removing, but it's essential for inspection, filtering, and decision-making.
+
+🎯 Purpose:
+
+Used to list packages known to the APT system.
+
+This includes:
+
+1) Installed packages
+
+2) Available packages from enabled repositories
+
+3) Upgradable packages
+
+| Command                           | What It Shows                       | Description                                                                            | Real Example                                    | Notes                                                                          |            |                                                    |
+| --------------------------------- | ----------------------------------- | -------------------------------------------------------------------------------------- | ----------------------------------------------- | ------------------------------------------------------------------------------ | ---------- | -------------------------------------------------- |
+| `apt list`                        | All known packages                  | Lists **all packages** (installed, available, upgradable, etc.) from all repositories  | `apt list`                                      | ⚠️ Very long output (tens of thousands of lines), rarely used alone            |            |                                                    |
+| `apt list --installed`            | Installed packages                  | Lists only packages that are currently installed on your system                        | `apt list --installed`                          | Useful for auditing installed software                                         |            |                                                    |
+| `apt list --upgradable`           | Packages with updates               | Shows packages that have newer versions available in the repositories                  | `apt list --upgradable`                         | Use before `apt upgrade` or `apt full-upgrade`                                 |            |                                                    |
+| `apt list --all-versions <pkg>`   | All available versions of a package | Shows **every version** of a package from all configured repositories                  | `apt list --all-versions nginx`                 | Helpful for debugging or version pinning                                       |            |                                                    |
+| `apt list <pattern>`              | Search by package name              | Lists packages whose names **match a given pattern**                                   | `apt list docker` <br> `apt list "*vim*"`       | Useful for quickly checking if a package exists                                |            |                                                    |
+| `apt list --manual-installed`     | Manually installed packages         | Lists only those packages the user installed directly (APT 2.3+)                       | `apt list --manual-installed`                   | Not available in older Ubuntu versions — use `apt-mark showmanual` as fallback |            |                                                    |
+| `apt list --installed <pattern>`  | Filter installed packages by name   | Lists only installed packages matching a pattern                                       | `apt list --installed "python3*"`               | Combines filtering with installation status                                    |            |                                                    |
+| `apt list --upgradable <pattern>` | Filter upgradable packages by name  | Lists only upgradable packages that match the pattern                                  | `apt list --upgradable "lib*"`                  | Useful for checking specific libraries for updates                             |            |                                                    |
+| \`apt list --installed            | grep <pattern>\`                    | Advanced filtered search                                                               | Pipe to `grep` to do flexible keyword filtering | \`apt list --installed                                                         | grep ssh\` | Works even if APT doesn’t support pattern directly |
+| `apt list --upgradeable`          | Alias for `--upgradable`            | Same as `--upgradable` — shows available updates                                       | `apt list --upgradeable`                        | Just a spelling variation; same result                                         |            |                                                    |
+| `apt list --all-versions`         | All versions (globally)             | When used without a package, shows all versions of all packages (⚠️ very large output) | `apt list --all-versions`                       | Not recommended without filtering                                              |            |                                                    |
+
+---
+apt search
+---
+
+🎯 Purpose:
+
+Searches for packages in APT by name or description.
+
+It queries local package metadata (refreshed via apt update)
+
+Useful for finding packages related to a keyword or functionality
+
+You’ll see:
+
+1) Package name
+
+2) Repo
+
+3) Version
+
+4) Architecture
+
+5) Short description
+
+| Command                          | Description                                  | Example                             |               |
+| -------------------------------- | -------------------------------------------- | ----------------------------------- | ------------- |
+| `apt search <term>`              | Search by keyword                            | `apt search python`                 |               |
+| `apt search "^<pkg-name>$"`      | Exact name match using regex                 | `apt search "^curl$"`               |               |
+| `apt search --names-only <term>` | (⚠️ Not in `apt`, but exists in `apt-cache`) | Use `apt-cache search --names-only` |               |
+| `apt search` + `grep`            | Advanced filtering                           | \`apt search ssh                    | grep client\` |
+
+
+| Feature                                 | `apt search`               | `apt list <pattern>` |
+| --------------------------------------- | -------------------------- | -------------------- |
+| Searches package **name + description** | ✅ Yes                      | ❌ Name only          |
+| Shows if package is installed           | ✅ Yes (with `[installed]`) | ✅ Yes                |
+| Includes brief description              | ✅ Yes                      | ❌ No                 |
+| Searches partial matches                | ✅ Yes                      | ✅ Yes                |
+| Case insensitive                        | ✅ Yes                      | ✅ Yes                |
+
+---
+apt-show
+---
+🎯 Purpose:
+
+Displays detailed information about a package from the APT metadata.
+
+✅ Even if the package is not yet installed.
+
+🧪 Example:
+
+apt show nginx
+
+Output:
+
+Package: nginx
+Version: 1.18.0-6ubuntu14.4
+Priority: optional
+Section: httpd
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Installed-Size: 614 kB
+Depends: libc6 (>= 2.17), libssl1.1 (>= 1.1.0)
+Homepage: http://nginx.net
+Download-Size: 155 kB
+APT-Sources: http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 Packages
+Description: small, powerful, scalable web/proxy server
+
+| Feature                           | `apt show <pkg>`          | `dpkg -s <pkg>` |
+| --------------------------------- | ------------------------- | --------------- |
+| Shows latest available version    | ✅ Yes                     | ❌ No            |
+| Works on uninstalled packages     | ✅ Yes                     | ❌ No            |
+| Reads APT repo metadata           | ✅ Yes                     | ❌ No            |
+| Works offline                     | ❌ No (requires APT cache) | ✅ Yes           |
+| Reads from `/var/lib/apt/lists/`  | ✅ Yes                     | ❌ No            |
+| Reads from `/var/lib/dpkg/status` | ❌ No                      | ✅ Yes           |
+
+---
+apt policy
+---
+
+🎯 Purpose:
+
+Shows:
+
+1) Installed version of a package
+
+2) Candidate version (i.e., the version APT would install or upgrade to)
+
+3) Available versions from all sources
+
+4) Repository priorities (Pin-Priority), which affect version selection
+
+📦 Example:
+
+apt policy nginx
+
+Output:
+
+nginx:
+  Installed: 1.18.0-6ubuntu14.3
+  Candidate: 1.18.0-6ubuntu14.4
+  Version table:
+     1.18.0-6ubuntu14.4 500
+        500 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 Packages
+ *** 1.18.0-6ubuntu14.3 100
+        100 /var/lib/dpkg/status
+
+| Field                       | Meaning                                                             |
+| --------------------------- | ------------------------------------------------------------------- |
+| `Installed:`                | Currently installed version (or `(none)` if not installed)          |
+| `Candidate:`                | Version that APT would install if you ran `apt install`             |
+| `Version table:`            | All available versions from all known sources                       |
+| Numbers like `500` or `100` | **Priority (Pin Priority)** — determines which version is preferred |
+| `***`                       | Marks the **installed version** in the table                        |
+
+| Command                   | Description                                       | Example                     |             |
+| ------------------------- | ------------------------------------------------- | --------------------------- | ----------- |
+| `apt policy`              | Show all available sources & priorities           | `apt policy`                |             |
+| `apt policy nginx`        | Show installed, candidate, and available versions | `apt policy nginx`          |             |
+| `apt policy <pkg>` + grep | Filter version table                              | \`apt policy openssh-server | grep http\` |
+
+| Command            | Shows Installed Version | Shows Available Versions | Shows Repo Source | Shows Description |
+| ------------------ | ----------------------- | ------------------------ | ----------------- | ----------------- |
+| `apt policy <pkg>` | ✅ Yes                   | ✅ Yes                    | ✅ Yes             | ❌ No              |
+| `apt show <pkg>`   | ✅ Yes                   | ✅ Yes                    | ✅ Yes             | ✅ Yes             |
+| `apt list <pkg>`   | ✅ Yes                   | ✅ Yes                    | ✅ Yes (limited)   | ❌ No              |
+
+---
+apt mark
+---
+
+🎯 Purpose:
+
+Manages the installation state or upgrade state of a package.
+
+Used to:
+
+Tell APT whether a package is automatically or manually installed
+
+Prevent a package from being upgraded (hold)
+
+Re-allow a package to be upgraded (unhold)
+
+| Subcommand            | What It Does                                                            |
+| --------------------- | ----------------------------------------------------------------------- |
+| `apt mark manual`     | Marks package as **manually installed** (APT won't auto-remove it)      |
+| `apt mark auto`       | Marks package as **automatically installed** (can be removed if unused) |
+| `apt mark hold`       | Prevents package from being **upgraded**                                |
+| `apt mark unhold`     | Removes the hold — allows package to be **upgraded again**              |
+| `apt-mark showmanual` | Lists **manually installed** packages                                   |
+| `apt-mark showauto`   | Lists **automatically installed** packages                              |
+| `apt-mark showhold`   | Lists **held** packages                                                 |
+
+🔐 Use Case: Why Use Hold?
+
+You may want to freeze a package at a specific version to:
+
+Avoid regressions or breaking changes
+
+Maintain compatibility with custom software
+
+Prevent kernel upgrades, proprietary drivers, etc.
+
+🔧 Protect critical tool from upgrade:
+
+sudo apt-mark hold docker-ce
+
+🔧 Prevent auto-removal of a useful tool:
+
+sudo apt-mark manual net-tools
+
+🔧 Revert a held package:
+
+sudo apt-mark unhold docker-ce
+
+| Command                 | Description                            |
+| ----------------------- | -------------------------------------- |
+| `apt-mark manual <pkg>` | Prevents APT from auto-removing it     |
+| `apt-mark auto <pkg>`   | Allows APT to auto-remove it if unused |
+| `apt-mark hold <pkg>`   | Freezes package at current version     |
+| `apt-mark unhold <pkg>` | Allows upgrades again                  |
+| `apt-mark showmanual`   | Shows manually installed packages      |
+| `apt-mark showauto`     | Shows automatically installed packages |
+| `apt-mark showhold`     | Lists held packages                    |

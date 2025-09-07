@@ -1,0 +1,43 @@
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+🔹 2. apt-get — Traditional, More Script-Friendly
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+
+| Command                   | Description                     |
+| ------------------------- | ------------------------------- |
+| `apt-get update`          | Same as above                   |
+| `apt-get upgrade`         | Same as above                   |
+| `apt-get dist-upgrade`    | Older name for `full-upgrade`   |
+| `apt-get install <pkg>`   | Install                         |
+| `apt-get remove <pkg>`    | Remove                          |
+| `apt-get purge <pkg>`     | Purge                           |
+| `apt-get autoremove`      | Auto remove                     |
+| `apt-get clean`           | Clean cache                     |
+| `apt-get autoclean`       | Clean partial packages          |
+| `apt-get check`           | Check broken dependencies       |
+| `apt-get source <pkg>`    | Download source code            |
+| `apt-get build-dep <pkg>` | Install dependencies for source |
+
+apt-get Exclusive Commands
+
+| Command                   | Description                                                           | Example                                             | Use Case                                                    |
+| ------------------------- | --------------------------------------------------------------------- | --------------------------------------------------- | ----------------------------------------------------------- |
+| `source <pkg>`            | Downloads the source code of a package (not the binary `.deb`)        | `apt-get source curl`                               | When you want to view or modify package source              |
+| `build-dep <pkg>`         | Installs all packages required to build the given package from source | `sudo apt-get build-dep nginx`                      | Prepare your system to compile software from source         |
+| `check`                   | Verifies if package dependencies are satisfied                        | `sudo apt-get check`                                | Diagnosing broken or partially installed packages           |
+| `download <pkg>`          | Downloads the `.deb` file of a package without installing it          | `apt-get download htop`                             | Save `.deb` files for manual install or air-gapped systems  |
+| `-f install`              | Attempts to fix broken dependencies automatically                     | `sudo apt-get -f install`                           | Repair broken installations after interrupted updates       |
+| `--print-uris`            | Displays the direct download URLs for the package files               | `apt-get --print-uris install vim`                  | Use in custom mirrors or offline scripting                  |
+| `--assume-no`             | Assumes “no” for all interactive prompts                              | `sudo apt-get --assume-no install nginx`            | Simulate rejection of install prompts (safe testing)        |
+| `--no-install-recommends` | Skips recommended packages during install                             | `sudo apt-get install --no-install-recommends curl` | Minimal installations (e.g., Docker, embedded systems)      |
+| `--only-upgrade`          | Only upgrades an installed package; won’t install new ones            | `sudo apt-get install --only-upgrade curl`          | Ensure a package is updated, but not newly added            |
+| `--reinstall`             | Reinstalls a package from the repositories                            | `sudo apt-get install --reinstall bash`             | Repair corrupted system binaries or configs                 |
+| `-s` / `--simulate`       | Simulates the command without making changes                          | `sudo apt-get -s upgrade`                           | Test what changes will happen before running it             |
+| `-d`                      | Downloads package files but doesn’t install them (caches them)        | `sudo apt-get -d install curl`                      | Cache `.deb` files in `/var/cache/apt/archives/`            |
+| `--ignore-missing`        | Ignores missing packages and installs what is available               | `sudo apt-get install nginx --ignore-missing`       | Partial installs in constrained networks or repos           |
+| `-b source <pkg>`         | Downloads and compiles the source package                             | `sudo apt-get -b source curl`                       | Automatically build the `.deb` from source                  |
+| `--compile`               | Compiles the source code after download                               | `sudo apt-get --compile source nano`                | Manually rebuild packages                                   |
+| `--print-architecture`    | Prints the architecture used by APT (e.g., `amd64`)                   | `apt-get --print-architecture`                      | Multi-arch setup, Docker builds, system introspection       |
+| `--tar-only`              | Download only `.orig.tar.gz` file of source package                   | `apt-get source --tar-only curl`                    | When you only need the upstream source (not Debian changes) |
+| `--diff-only`             | Download only Debian-specific patch (`.diff.gz`)                      | `apt-get source --diff-only curl`                   | Useful for inspecting Debian packaging changes              |
