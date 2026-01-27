@@ -1,0 +1,337 @@
+0️⃣ Linux Foundations (Absolute Beginner Layer)
+
+0.1 What Linux Really Is
+	•	UNIX vs Linux
+	•	Kernel vs OS vs Distribution
+	•	GNU utilities
+	•	Monolithic vs modular kernel
+	•	User space vs kernel space
+	•	POSIX basics
+	•	Linux distributions overview (RHEL, Ubuntu, Debian, SUSE, Arch)
+	•	Rolling vs stable releases
+
+0.2 Linux Architecture (VERY IMPORTANT)
+	•	Bootloader → Kernel → init → services
+	•	Hardware → Kernel → Syscalls → Shell → User
+	•	Interrupts & system calls
+	•	Kernel modules vs built-in drivers
+
+⸻
+
+1️⃣ Installation, Boot & Startup (Deep Level)
+
+1.1 Installation
+	•	Manual partitioning
+	•	GPT vs MBR
+	•	EFI vs BIOS
+	•	Filesystem selection (ext4 vs xfs)
+	•	Swap sizing strategy
+	•	Minimal vs server install
+
+1.2 Boot Process (FAANG Interview Favorite)
+	•	BIOS / UEFI
+	•	GRUB2 internals
+	•	Kernel loading
+	•	initramfs
+	•	systemd startup flow
+	•	Boot targets (rescue, emergency)
+
+1.3 Boot Troubleshooting
+	•	Reset root password
+	•	Broken /etc/fstab
+	•	Kernel panic
+	•	GRUB recovery
+	•	Emergency vs rescue mode
+
+⸻
+
+2️⃣ Command Line & Shell Mastery
+
+2.1 Shell Basics
+	•	Bash vs sh vs zsh
+	•	Login vs non-login shells
+	•	Interactive vs non-interactive shells
+	•	Environment variables
+	•	PATH resolution
+
+2.2 File & Directory Operations
+	•	ls, cp, mv, rm, mkdir, rmdir
+	•	inode concept
+	•	hard links vs soft links
+	•	globbing
+	•	file types
+
+2.3 Input / Output Redirection
+	•	>, >>, <
+	•	2>, &>, |, tee
+	•	Subshells
+	•	Command substitution
+
+⸻
+
+3️⃣ Text Processing (Interview Gold)
+
+3.1 Core Tools
+	•	cat, tac, nl
+	•	head, tail
+	•	wc, sort, uniq
+	•	cut, paste, join
+
+3.2 grep & Regular Expressions
+	•	Basic vs extended regex
+	•	grep vs egrep
+	•	Lookahead basics
+	•	Practical log analysis
+
+3.3 sed & awk (Mandatory)
+	•	sed editing commands
+	•	awk fields & patterns
+	•	Log parsing
+	•	CSV processing
+
+⸻
+
+4️⃣ File Systems & Storage (Very Deep)
+
+4.1 Filesystem Internals
+	•	inode, superblock, data blocks
+	•	journaling
+	•	mount lifecycle
+	•	permissions inheritance
+
+4.2 Disk Management
+	•	lsblk, blkid
+	•	fdisk, parted
+	•	Mount by UUID vs label
+	•	Swap internals
+
+4.3 LVM (Enterprise Critical)
+	•	PV, VG, LV
+	•	Extending LV online
+	•	Shrinking safely
+	•	Snapshots
+	•	Backup & restore
+
+4.4 RAID (Linux+ Extra)
+	•	RAID 0/1/5/6/10
+	•	mdadm
+	•	Failure simulation
+
+4.5 Network File Systems
+	•	NFS (v3 vs v4)
+	•	autofs
+	•	CIFS basics
+
+⸻
+
+5️⃣ Permissions, Ownership & ACLs
+
+5.1 Linux Permission Model
+	•	rwx model
+	•	Numeric vs symbolic
+	•	umask
+	•	setuid, setgid, sticky bit
+
+5.2 ACLs
+	•	getfacl / setfacl
+	•	Use cases
+	•	Troubleshooting access issues
+
+⸻
+
+6️⃣ User, Group & Privilege Management
+
+6.1 Users & Groups
+	•	/etc/passwd, shadow, group
+	•	User lifecycle
+	•	Password aging
+	•	Login shells
+
+6.2 sudo & Privilege Escalation
+	•	sudoers file
+	•	Least privilege
+	•	Auditing sudo usage
+
+⸻
+
+7️⃣ Process & Resource Management (FAANG Favorite)
+
+7.1 Process Lifecycle
+	•	fork, exec
+	•	PID, PPID
+	•	Zombie, orphan processes
+
+7.2 Process Control
+	•	ps, top, htop
+	•	nice & renice
+	•	kill signals (SIGTERM vs SIGKILL)
+
+7.3 Resource Analysis
+	•	CPU scheduling
+	•	Memory usage
+	•	I/O wait
+	•	Load average (INTERVIEW MUST)
+
+⸻
+
+8️⃣ Networking (Production Level)
+
+8.1 Network Basics
+	•	IPv4 / IPv6
+	•	CIDR
+	•	Routing tables
+	•	ARP, DNS
+
+8.2 Linux Networking Tools
+	•	ip, ss
+	•	nmcli
+	•	tcpdump
+	•	netstat (legacy)
+
+8.3 Firewalls
+	•	firewalld
+	•	nftables
+	•	iptables (legacy understanding)
+	•	Zones & services
+
+⸻
+
+9️⃣ System Services & systemd
+
+9.1 systemd Internals
+	•	Units
+	•	Targets
+	•	Dependencies
+	•	Journald
+
+9.2 Service Management
+	•	Enable/disable
+	•	Mask/unmask
+	•	Custom service files
+
+9.3 Timers & Scheduling
+	•	cron
+	•	at
+	•	systemd timers (INTERVIEW)
+
+⸻
+
+🔟 Logging, Monitoring & Troubleshooting
+
+10.1 Logs
+	•	journalctl
+	•	rsyslog
+	•	Log rotation
+
+10.2 Troubleshooting Methodology (VERY IMPORTANT)
+	•	Boot issues
+	•	Disk full incidents
+	•	File deleted but process running
+	•	High CPU / memory
+
+⸻
+
+1️⃣1️⃣ Package Management
+
+11.1 RPM & DNF
+	•	Repo configuration
+	•	Package dependencies
+	•	Rollbacks
+	•	Local RPM install
+
+11.2 Flatpak / Snap (Linux+)
+	•	Use cases
+	•	Security isolation
+
+⸻
+
+1️⃣2️⃣ Security & Hardening (Top Company Level)
+
+12.1 SELinux (Critical)
+	•	Modes
+	•	Contexts
+	•	Booleans
+	•	Port labeling
+	•	Troubleshooting denials
+
+12.2 Authentication
+	•	SSH key-based auth
+	•	PAM basics
+	•	LDAP/Kerberos concepts
+
+12.3 System Hardening
+	•	Secure SSH
+	•	Disable unused services
+	•	File integrity
+	•	Auditd
+
+⸻
+
+1️⃣3️⃣ Shell Scripting (Must-Have)
+
+13.1 Bash Scripting
+	•	Variables
+	•	Conditions
+	•	Loops
+	•	Functions
+	•	Exit codes
+
+13.2 Script Debugging
+	•	set -x
+	•	ShellCheck
+	•	Error handling
+
+⸻
+
+1️⃣4️⃣ Containers & Virtualization (Modern Linux)
+
+14.1 Containers
+	•	Namespaces
+	•	cgroups
+	•	Docker internals
+	•	Podman basics
+
+14.2 Virtualization
+	•	KVM
+	•	QEMU
+	•	libvirt
+	•	VM storage
+
+⸻
+
+1️⃣5️⃣ Automation & DevOps-Ready Linux
+
+15.1 Configuration Management
+	•	Ansible basics
+	•	Inventory
+	•	Playbooks
+	•	Idempotency
+
+15.2 Git for Linux Engineers
+	•	Git internals
+	•	Branching
+	•	Rebase vs merge
+
+⸻
+
+1️⃣6️⃣ Performance, Scaling & Reliability (FAANG Core)
+
+16.1 Performance Tuning
+	•	sysctl
+	•	ulimit
+	•	CPU pinning
+	•	Memory tuning
+
+16.2 Reliability
+	•	Failover concepts
+	•	Disk failure handling
+	•	Service recovery
+
+⸻
+
+1️⃣7️⃣ Linux Internals (Advanced / Optional but Powerful)
+	•	Syscalls
+	•	strace / ltrace
+	•	/proc & /sys
+	•	Kernel tuning
+	•	OOM killer
